@@ -1,0 +1,7 @@
+{
+    "board": "arduino:avr:nano",
+    "configuration": "cpu=atmega328",
+    "programmer": "AVRISP mkII",
+    "port": "/dev/ttyUSB0",
+    "sketch": "open-midi-controller.ino"
+}
