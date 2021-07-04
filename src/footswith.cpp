@@ -5,51 +5,43 @@
 Footswitch::Footswitch(int no, int pin) {
     this->pin = pin;
     this->no = no;
+    this->buttonDown = false;
 }
 
 void Footswitch::init() {
-    this->timeClicked = 0;
-    this->lastState = -1;
-
     pinMode(this->pin, INPUT_PULLUP);
 }
 
-ClickType Footswitch::checkClicked() {
-    ClickType result = ClickType::NONE;
-    
-    int state = digitalRead(this->pin);
-
-    // wait for first state change 
-    if (this->lastState == -1) {
-        this->timeClicked = millis();
-    }
-
-    boolean stateNotChanged = state == this->lastState;
-
-    if (stateNotChanged && state == HIGH) {
-        return ClickType::NONE;
-    } else if (stateNotChanged && state == LOW) {
-        return ClickType::PRESSED;
-    }
-
-    if (state == LOW) {
-        timeClicked = millis();
-        result = ClickType::PRESSED;
-    } else {
-        int timeFromClickStart = millis() - timeClicked;
-
-        if (timeFromClickStart > ClickType::LONG) {
-            result = ClickType::LONG;
-        } else if (timeFromClickStart > ClickType::NORMAL) {
-            result = ClickType::NORMAL;
-        }
-    }
-
-    this->lastState = state;
-
-    return result;
+ClickType Footswitch::checkClicked() {    
+    return this->click;
 }
 
 int Footswitch::getNumber() {
     return this->no;
+}
+
+void Footswitch::scan() {
+    int state = digitalRead(this->pin);
+    ClickType result = ClickType::NONE;
+
+    if (state == LOW) {
+        if (!this->buttonDown) {
+            this->timeClicked = millis();
+            this->buttonDown = true;
+        }
+
+        result = ClickType::PRESSED;
+
+    } else if (state == HIGH && this->buttonDown) {
+        this->buttonDown = false;
+        unsigned long timeFromClickStart = millis() - timeClicked;
+
+        if (timeFromClickStart >= 1000) {
+            result = ClickType::LONG;
+        }
+
+        result = ClickType::NORMAL;
+    }
+
+    this->click = result;
 }

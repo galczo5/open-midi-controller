@@ -6,12 +6,14 @@
 
 class Controller {
     private:
-        ControllerState state;
+        boolean stateChanged;
 
     public:
-        Controller();
+        ControllerState state;
+        Controller(ControllerState initState);
         boolean inState(ControllerState state);
         void enterState(ControllerState state);
+        boolean checkChanges();
 };
 
 #endif

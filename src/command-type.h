@@ -2,12 +2,13 @@
 #define COMMAND_TYPE_H
 
 enum CommandType {
-  NOTE = 0,
-  CC = 1,
-  TOGGLE_CC = 2,
-  NEXT_PAGE = 3,
-  PREV_PAGE = 4,
-  PAGE = 5
+  UNSET = 0,
+  NOTE = 1,
+  CC = 2,
+  TOGGLE_CC = 3,
+  NEXT_PAGE = 4,
+  PREV_PAGE = 5,
+  PAGE = 6
 };
 
 #endif

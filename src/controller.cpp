@@ -2,8 +2,9 @@
 #include "controller.h"
 #include "controller-state.h"
 
-Controller::Controller() {
-    this->state = ControllerState::SEND_COMMAND;
+Controller::Controller(ControllerState initState) {
+    this->state = initState;
+    this->stateChanged = false;
 }
 
 boolean Controller::inState(ControllerState state) {
@@ -12,4 +13,12 @@ boolean Controller::inState(ControllerState state) {
 
 void Controller::enterState(ControllerState state) {
     this->state = state;
+    this->stateChanged = true;
+}
+
+boolean Controller::checkChanges() {
+    boolean prevState = this->stateChanged;
+    this->stateChanged = false;
+
+    return prevState;
 }

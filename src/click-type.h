@@ -4,8 +4,8 @@
 enum ClickType {
 	NONE = 0,
 	PRESSED = 1,
-	NORMAL = 10,
-	LONG = 1000
+	NORMAL = 2,
+	LONG = 3
 };
 
 #endif

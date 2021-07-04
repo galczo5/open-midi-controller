@@ -7,16 +7,18 @@
 class Footswitch {
 	private: 
 		int pin;
-		int timeClicked;
-		int lastState;
 		int no;
+		unsigned long timeClicked;
+		boolean buttonDown;
+		ClickType click;
 		
 	public: 
 		Footswitch(int no, int pin);
 		void init();
-		ClickType checkClicked();
-		int getNumber();
+		void scan();
 		
+		ClickType checkClicked();
+		int getNumber();		
 };
 
 #endif
