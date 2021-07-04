@@ -52,7 +52,7 @@ void setup() {
   lcd.init();
   lcd.backlight();
 
-  // printer.welcome(lcd, 1);
+  printer.welcome(lcd, 1);
 
   for (Footswitch* fs : switches) { 
     fs->init(); 
@@ -109,9 +109,9 @@ void configure() {
   
   if (configurationState == ConfigurationState::SELECT_FOOTSWITCH) {
     for (Footswitch* fs : switches) {
-      ClickType ct = fs->checkClicked();
-      if (ct == ClickType::NORMAL) {
-        configuration.setFootswitch(fs->getNumber());
+      ClickType click = fs->checkClicked();
+      if (click == ClickType::NORMAL || click == ClickType::LONG) {
+        configuration.setFootswitch(fs->getNumber(), click == ClickType::LONG);
         configuration.next();
         printer.configurationPrompt(lcd, configuration.getState(), configuration.getValue());
       }
@@ -125,7 +125,7 @@ void configure() {
     ConfigurationState newState = configuration.getState();
     if (newState == ConfigurationState::EXIT) {
       printer.selectFootswitchPrompt(lcd);
-      config.setButton(configuration.getFootswitch(), configuration.getControllerButton());
+      config.setButton(configuration.getFootswitch(), configuration.getControllerButton(), configuration.isLongClick());
       configuration.reset();
     } else {
       printer.configurationPrompt(lcd, configuration.getState(), configuration.getValue());
@@ -138,11 +138,8 @@ void sendCommands() {
     ClickType click = fs->checkClicked();
     int no = fs->getNumber();
 
-    if (click == ClickType::NORMAL) {
-      ControllerButton btn = config.getButtonData(no);
-      printer.commandInfo(lcd, no, &btn);
-    } else if (click == ClickType::LONG) {
-      ControllerButton btn = config.getButtonData(no);
+    if (click == ClickType::NORMAL || click == ClickType::LONG) {
+      ControllerButton btn = config.getButtonData(no, click == ClickType::LONG);
       printer.commandInfo(lcd, no, &btn);
     }
   }

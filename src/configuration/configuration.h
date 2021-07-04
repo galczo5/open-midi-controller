@@ -11,15 +11,21 @@ class Configuration {
         int footswitchNo;
         byte value;
         byte configBytes[5];
+        boolean longClick;
 
     public:
         void reset();
         void next();
+        
         ConfigurationState getState();
+        
         void incrementValue();
         byte getValue();
-        void setFootswitch(int no);
+
+        void setFootswitch(int no, boolean longClick);
         int getFootswitch();
+        boolean isLongClick();
+
         ControllerButton getControllerButton();
 };
 

@@ -55,8 +55,9 @@ byte Configuration::getValue() {
     return this->value;
 }
 
-void Configuration::setFootswitch(int no) {
+void Configuration::setFootswitch(int no, boolean longClick) {
     this->footswitchNo = no;
+    this->longClick = longClick;
 }
 
 int Configuration::getFootswitch() {
@@ -72,4 +73,8 @@ ControllerButton Configuration::getControllerButton() {
     button.value2 = this->configBytes[VALUE3];
 
     return button;
+}
+
+boolean Configuration::isLongClick() {
+    return this->longClick;
 }

@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "open-midi-controller-config.h"
+#include "footswitch/click-type.h"
 
 OpenMidiControllerConfig::OpenMidiControllerConfig(byte data[]) {
   for (int i = 0; i < BUFFER_SIZE; i++) {
@@ -11,8 +12,9 @@ int OpenMidiControllerConfig::getPage() {
   return this->page;
 }
 
-ControllerButton OpenMidiControllerConfig::getButtonData(int no) {
-  int index = (PAGE_SIZE * this->page) + (no * BUTTON_SIZE);
+ControllerButton OpenMidiControllerConfig::getButtonData(int no, boolean longClick) {
+  int mode = longClick ? BUTTON_SIZE : 0;
+  int index = (PAGE_SIZE * this->page) + ((no + mode) * BUTTON_SIZE);
 
   ControllerButton button;
   button.channel = this->storedData[index];
@@ -24,8 +26,9 @@ ControllerButton OpenMidiControllerConfig::getButtonData(int no) {
   return button;
 }
 
-void OpenMidiControllerConfig::setButton(int no, ControllerButton button) {
-  int index = (PAGE_SIZE * this->page) + (no * BUTTON_SIZE);
+void OpenMidiControllerConfig::setButton(int no, ControllerButton button, boolean longClick) {
+  int mode = longClick ? BUTTON_SIZE : 0;
+  int index = (PAGE_SIZE * this->page) + ((no + mode) * BUTTON_SIZE);
   
   this->storedData[index] = button.channel;
   this->storedData[index + 1] = button.type;

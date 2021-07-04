@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "controller-button.h"
 #include "command-type.h"
+#include "footswitch/click-type.h"
 
 #define BUFFER_SIZE 300
 #define PAGE_SIZE 48
@@ -22,8 +23,9 @@ private:
 public:
   OpenMidiControllerConfig(byte data[]);
   int getPage();
-  ControllerButton getButtonData(int no);
-  void setButton(int no, ControllerButton button);
+  
+  ControllerButton getButtonData(int no, boolean longClick);
+  void setButton(int no, ControllerButton button, boolean longClick);
 
   static ControllerButton createButton(byte channel, CommandType type, byte value1, byte value2, byte value3);
 };
