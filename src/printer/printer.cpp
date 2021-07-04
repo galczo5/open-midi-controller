@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include <LiquidCrystal_I2C.h>
-#include "configuration-state.h"
-#include "command-type.h"
+
+#include "configuration/configuration-state.h"
+#include "config/command-type.h"
 #include "printer.h"
 
 #define MESSAGE_TIMEOUT 1500
@@ -54,11 +55,17 @@ void Printer::configurationPrompt(LiquidCrystal_I2C lcd, ConfigurationState stat
         line1 = "COMMAND TYPE";
         line2 = this->valueToCommandTypeLabel(value);
     } else if (state == ConfigurationState::SELECT_VALUE1) {
-        line1 = "VALUE";
+        line1 = "NOTE/CC/PAGE";
         line2 = String(value);
     } else if (state == ConfigurationState::SELECT_VALUE2) {
+        line1 = "VALUE";
+        line2 = String(value);
+    } else if (state == ConfigurationState::SELECT_VALUE3) {
         line1 = "TOGGLE VALUE";
         line2 = String(value);
+    } else {
+        line1 = "ERROR - UNKNOWN";
+        line2 = "STATE: " + String(state);
     }
 
     lcd.clear();
@@ -90,4 +97,26 @@ String Printer::valueToCommandTypeLabel(byte value) {
         return "ERROR: UNKNOWN";
     }
 
+}
+
+void Printer::commandInfo(LiquidCrystal_I2C lcd, int footswitchNo, ControllerButton* btn) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("FOOTSWITCH " + String(footswitchNo));
+    lcd.setCursor(0, 1);
+    if (btn->type == CommandType::TOGGLE_CC) {
+        lcd.print(
+            this->valueToCommandTypeLabel(CommandType::CC) + " " + 
+            String(btn->value1) + " " + 
+            String(btn->value2) + " " + 
+            String(btn->value3)
+        );
+    } else {
+        lcd.print(
+            this->valueToCommandTypeLabel(btn->type) + " " + 
+            String(btn->value1) + " " + 
+            String(btn->value2)
+        );
+    }
+    
 }

@@ -3,14 +3,14 @@
 
 #include <Arduino.h>
 #include "configuration-state.h"
-#include "controller-button.h"
+#include "config/controller-button.h"
 
 class Configuration {
     private:
         ConfigurationState state;
         int footswitchNo;
         byte value;
-        byte configBytes[4];
+        byte configBytes[5];
 
     public:
         void reset();

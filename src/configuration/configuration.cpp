@@ -1,12 +1,13 @@
 #include "configuration.h"
 #include "configuration-state.h"
-#include "command-type.h"
-#include "controller-button.h"
+#include "config/command-type.h"
+#include "config/controller-button.h"
 
 #define CHANNEL 0
 #define TYPE 1
 #define VALUE1 2
 #define VALUE2 3
+#define VALUE3 4
 
 void Configuration::reset() {
     this->state = ConfigurationState::SELECT_FOOTSWITCH;
@@ -18,14 +19,15 @@ void Configuration::reset() {
     this->configBytes[TYPE] = 0;
     this->configBytes[VALUE1] = 0;
     this->configBytes[VALUE2] = 0;
+    this->configBytes[VALUE3] = 0;
 }
 
 void Configuration::next() {
     this->configBytes[this->state] = this->value;
 
-    if (state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::TOGGLE_CC) {
-        this->state = ConfigurationState::SELECT_VALUE2;
-    } else if (state == ConfigurationState::SELECT_VALUE1) {
+    if (state == ConfigurationState::SELECT_VALUE2 && this->configBytes[TYPE] == CommandType::TOGGLE_CC) {
+        this->state = ConfigurationState::SELECT_VALUE3;
+    } else if (state == ConfigurationState::SELECT_VALUE2) {
         this->state = ConfigurationState::EXIT;
     } else {
         this->state = static_cast<ConfigurationState>(this->state + 1);
@@ -43,7 +45,7 @@ void Configuration::incrementValue() {
     int numberOfValues = 128;
 
     if (this->state == ConfigurationState::SELECT_TYPE) {
-        numberOfValues = 5;
+        numberOfValues = 6;
     }
 
     this->value = (this->value + 1) % numberOfValues;
@@ -67,6 +69,7 @@ ControllerButton Configuration::getControllerButton() {
     button.type = this->configBytes[TYPE];
     button.value1 = this->configBytes[VALUE1];
     button.value2 = this->configBytes[VALUE2];
+    button.value2 = this->configBytes[VALUE3];
 
     return button;
 }

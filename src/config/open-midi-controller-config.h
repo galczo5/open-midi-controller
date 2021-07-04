@@ -5,9 +5,11 @@
 #include "controller-button.h"
 #include "command-type.h"
 
-#define BUFFER_SIZE 240
+#define BUFFER_SIZE 300
 #define PAGE_SIZE 48
-#define BUTTON_SIZE 4
+#define BUTTON_SIZE 5
+
+// 6 buttons x 2 actions x 5 pages * 5 bytes = 300
 
 class OpenMidiControllerConfig {
 
@@ -23,7 +25,7 @@ public:
   ControllerButton getButtonData(int no);
   void setButton(int no, ControllerButton button);
 
-  static ControllerButton createButton(byte channel, CommandType type, byte value1, byte value2);
+  static ControllerButton createButton(byte channel, CommandType type, byte value1, byte value2, byte value3);
 };
 
 #endif

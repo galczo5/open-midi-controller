@@ -1,10 +1,10 @@
 #include <LiquidCrystal_I2C.h>
-#include "open-midi-controller-config.h"
-#include "footswitch.h"
-#include "command-type.h"
-#include "controller.h"
-#include "printer.h"
-#include "configuration.h"
+#include "config/open-midi-controller-config.h"
+#include "footswitch/footswitch.h"
+#include "config/command-type.h"
+#include "controller/controller.h"
+#include "printer/printer.h"
+#include "configuration/configuration.h"
 
 /**
  * Open Midi Controller
@@ -46,8 +46,6 @@ Footswitch fs6(5, FS_6_PIN);
 Footswitch* switches[6] = { &fs1, &fs2, &fs3, &fs4, &fs5, &fs6 };
 
 boolean modeShoudlChange = false;
-int lastState = ClickType::NONE;
-
 
 void setup() {
   Serial.begin(9600);
@@ -85,26 +83,24 @@ void loop() {
 }
 
 boolean checkForModeChanges() {
-  ClickType ct2 = switches[FS_CONFIG_1]->checkClicked();
-  ClickType ct4 = switches[FS_CONFIG_2]->checkClicked();
+  ClickType configurationSwitch1Click = switches[FS_CONFIG_1]->checkClicked();
+  ClickType configurationSwitch2Click = switches[FS_CONFIG_2]->checkClicked();
 
-  if (ct2 == ClickType::PRESSED && ct4 == ClickType::PRESSED) {
+  if (configurationSwitch1Click == ClickType::PRESSED && configurationSwitch2Click == ClickType::PRESSED) {
     modeShoudlChange = true;
   }
 
-  if (lastState != ct4 && lastState != ClickType::PRESSED && modeShoudlChange) {
+  if (configurationSwitch1Click == ClickType::NONE && configurationSwitch1Click == ClickType::NONE && modeShoudlChange) {
     if (ctrl.inState(ControllerState::SEND_COMMAND)) {
       ctrl.enterState(ControllerState::CONFIGURE);
     } else if (ctrl.inState(ControllerState::CONFIGURE)) {
       ctrl.enterState(ControllerState::SEND_COMMAND);
     }
 
-    lastState = ct4;
     modeShoudlChange = false;
     return true;
   }
 
-  lastState = ct4;
   return false;
 }
 
@@ -126,7 +122,8 @@ void configure() {
   } else if (switches[FS_CONFIG_2]->checkClicked() == ClickType::NORMAL && configurationState != ConfigurationState::EXIT) {
     configuration.next();
 
-    if (configurationState == ConfigurationState::EXIT) {
+    ConfigurationState newState = configuration.getState();
+    if (newState == ConfigurationState::EXIT) {
       printer.selectFootswitchPrompt(lcd);
       config.setButton(configuration.getFootswitch(), configuration.getControllerButton());
       configuration.reset();
@@ -139,15 +136,14 @@ void configure() {
 void sendCommands() {
   for (Footswitch* fs : switches) {
     ClickType click = fs->checkClicked();
+    int no = fs->getNumber();
+
     if (click == ClickType::NORMAL) {
-      Serial.println(99 + fs->getNumber());
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("FS " + String(fs->getNumber()));
+      ControllerButton btn = config.getButtonData(no);
+      printer.commandInfo(lcd, no, &btn);
     } else if (click == ClickType::LONG) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("FS " + String(fs->getNumber()) + " LONG");
+      ControllerButton btn = config.getButtonData(no);
+      printer.commandInfo(lcd, no, &btn);
     }
   }
 }

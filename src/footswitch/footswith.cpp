@@ -2,6 +2,9 @@
 #include "footswitch.h"
 #include "click-type.h"
 
+#define LONG_CLICK_TIME 1000
+#define DEBOUNCE_TIME 5
+
 Footswitch::Footswitch(int no, int pin) {
     this->pin = pin;
     this->no = no;
@@ -36,11 +39,11 @@ void Footswitch::scan() {
         this->buttonDown = false;
         unsigned long timeFromClickStart = millis() - timeClicked;
 
-        if (timeFromClickStart >= 1000) {
+        if (timeFromClickStart >= LONG_CLICK_TIME) {
             result = ClickType::LONG;
+        } else if (timeFromClickStart >= DEBOUNCE_TIME) {
+            result = ClickType::NORMAL;
         }
-
-        result = ClickType::NORMAL;
     }
 
     this->click = result;

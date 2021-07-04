@@ -1,9 +1,6 @@
 #include <Arduino.h>
 #include "open-midi-controller-config.h"
 
-
-// 6 buttons x 2 actions x 5 pages * 4 bytes = 240
-
 OpenMidiControllerConfig::OpenMidiControllerConfig(byte data[]) {
   for (int i = 0; i < BUFFER_SIZE; i++) {
     this->storedData[i] = data[i];
@@ -22,6 +19,7 @@ ControllerButton OpenMidiControllerConfig::getButtonData(int no) {
   button.type = this->storedData[index + 1];
   button.value1 = this->storedData[index + 2];
   button.value2 = this->storedData[index + 3];
+  button.value3 = this->storedData[index + 4];
 
   return button;
 }
@@ -33,15 +31,17 @@ void OpenMidiControllerConfig::setButton(int no, ControllerButton button) {
   this->storedData[index + 1] = button.type;
   this->storedData[index + 2] = button.value1;
   this->storedData[index + 3] = button.value2;
+  this->storedData[index + 4] = button.value3;
 }
 
-ControllerButton OpenMidiControllerConfig::createButton(byte channel, CommandType type, byte value1, byte value2) {
+ControllerButton OpenMidiControllerConfig::createButton(byte channel, CommandType type, byte value1, byte value2, byte value3) {
   ControllerButton button;
 
   button.channel = channel;
   button.type = type;
   button.value1 = value1;
   button.value2 = value2;
+  button.value3 = value3;
 
   return button;
 }

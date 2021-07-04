@@ -8,6 +8,7 @@ struct ControllerButton {
   byte type;
   byte value1;
   byte value2;
+  byte value3;
 };
 
 #endif

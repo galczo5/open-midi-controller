@@ -7,7 +7,8 @@ enum ConfigurationState {
     SELECT_TYPE = 1,
     SELECT_VALUE1 = 2,
     SELECT_VALUE2 = 3,
-    EXIT = 4
+    SELECT_VALUE3 = 4,
+    EXIT = 5
 };
 
 #endif
