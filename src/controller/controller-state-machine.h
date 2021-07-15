@@ -4,13 +4,13 @@
 #include <Arduino.h>
 #include "controller-state.h"
 
-class Controller {
+class ControllerStateMachine {
     private:
         boolean stateChanged;
 
     public:
         ControllerState state;
-        Controller(ControllerState initState);
+        ControllerStateMachine(ControllerState initState);
         boolean inState(ControllerState state);
         void enterState(ControllerState state);
         boolean checkChanges();

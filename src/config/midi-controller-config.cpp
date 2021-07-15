@@ -1,23 +1,22 @@
 #include <Arduino.h>
 #include <EEPROM.h>
-#include "open-midi-controller-config.h"
-#include "footswitch/click-type.h"
+#include "midi-controller-config.h"
 
-OpenMidiControllerConfig::OpenMidiControllerConfig() {
+MidiControllerConfig::MidiControllerConfig() {
   for (int i = 0; i < BUFFER_SIZE; i++) {
     this->storedData[i] = EEPROM.read(i);
   }
 }
 
-int OpenMidiControllerConfig::getPage() {
+int MidiControllerConfig::getPage() {
   return this->page;
 }
 
-ControllerButton OpenMidiControllerConfig::getButtonData(int no, boolean longClick) {
+ControllerButtonEntity MidiControllerConfig::getButtonData(int no, boolean longClick) {
   int mode = longClick ? BUTTON_SIZE : 0;
   int index = (PAGE_SIZE * this->page) + ((no + mode) * BUTTON_SIZE);
 
-  ControllerButton button;
+  ControllerButtonEntity button;
   button.channel = this->storedData[index];
   button.type = this->storedData[index + 1];
   button.value1 = this->storedData[index + 2];
@@ -27,7 +26,7 @@ ControllerButton OpenMidiControllerConfig::getButtonData(int no, boolean longCli
   return button;
 }
 
-void OpenMidiControllerConfig::setButton(int no, ControllerButton button, boolean longClick) {
+void MidiControllerConfig::setButton(int no, ControllerButtonEntity button, boolean longClick) {
   int mode = longClick ? BUTTON_SIZE : 0;
   int index = (PAGE_SIZE * this->page) + ((no + mode) * BUTTON_SIZE);
   
@@ -44,8 +43,8 @@ void OpenMidiControllerConfig::setButton(int no, ControllerButton button, boolea
   EEPROM.write(index + 4, button.value3);
 }
 
-ControllerButton OpenMidiControllerConfig::createButton(byte channel, CommandType type, byte value1, byte value2, byte value3) {
-  ControllerButton button;
+ControllerButtonEntity MidiControllerConfig::createButton(byte channel, CommandType type, byte value1, byte value2, byte value3) {
+  ControllerButtonEntity button;
 
   button.channel = channel;
   button.type = type;

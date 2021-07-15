@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "footswitch.h"
-#include "click-type.h"
+#include "footswitch-state.h"
 
 #define LONG_CLICK_TIME 1000
 #define DEBOUNCE_TIME 5
@@ -15,7 +15,7 @@ void Footswitch::init() {
     pinMode(this->pin, INPUT_PULLUP);
 }
 
-ClickType Footswitch::checkClicked() {    
+FootswitchState Footswitch::checkClicked() {    
     return this->click;
 }
 
@@ -25,7 +25,7 @@ int Footswitch::getNumber() {
 
 void Footswitch::scan() {
     int state = digitalRead(this->pin);
-    ClickType result = ClickType::NONE;
+    FootswitchState result = FootswitchState::NONE;
 
     if (state == LOW) {
         if (!this->buttonDown) {
@@ -33,16 +33,16 @@ void Footswitch::scan() {
             this->buttonDown = true;
         }
 
-        result = ClickType::PRESSED;
+        result = FootswitchState::PRESSED;
 
     } else if (state == HIGH && this->buttonDown) {
         this->buttonDown = false;
         unsigned long timeFromClickStart = millis() - timeClicked;
 
         if (timeFromClickStart >= LONG_CLICK_TIME) {
-            result = ClickType::LONG;
+            result = FootswitchState::LONG_CLICK;
         } else if (timeFromClickStart >= DEBOUNCE_TIME) {
-            result = ClickType::NORMAL;
+            result = FootswitchState::CLICK;
         }
     }
 

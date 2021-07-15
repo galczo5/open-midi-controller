@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <LiquidCrystal_I2C.h>
 #include "configuration/configuration-state.h"
-#include "config/controller-button.h"
+#include "config/controller-button-entity.h"
 
 class Printer {
     private:
@@ -16,7 +16,7 @@ class Printer {
         void leaveConfiguration(LiquidCrystal_I2C lcd);
         void selectFootswitchPrompt(LiquidCrystal_I2C lcd);
         void configurationPrompt(LiquidCrystal_I2C lcd, ConfigurationState state, byte value);
-        void commandInfo(LiquidCrystal_I2C lcd, int footswitchNo, ControllerButton* btn);
+        void commandInfo(LiquidCrystal_I2C lcd, int footswitchNo, ControllerButtonEntity* btn);
 };
 
 #endif

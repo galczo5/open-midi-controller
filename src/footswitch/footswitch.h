@@ -2,7 +2,7 @@
 #define FOOTSWITH_H
 
 #include <Arduino.h>
-#include "click-type.h"
+#include "footswitch-state.h"
 
 class Footswitch {
 	private: 
@@ -10,14 +10,14 @@ class Footswitch {
 		int no;
 		unsigned long timeClicked;
 		boolean buttonDown;
-		ClickType click;
+		FootswitchState click;
 		
 	public: 
 		Footswitch(int no, int pin);
 		void init();
 		void scan();
 		
-		ClickType checkClicked();
+		FootswitchState checkClicked();
 		int getNumber();		
 };
 

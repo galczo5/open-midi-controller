@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-struct ControllerButton {
+struct ControllerButtonEntity {
   byte channel;
   byte type;
   byte value1;

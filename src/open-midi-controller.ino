@@ -1,10 +1,10 @@
 #include <LiquidCrystal_I2C.h>
-#include "config/open-midi-controller-config.h"
+#include "config/midi-controller-config.h"
 #include "footswitch/footswitch.h"
 #include "config/command-type.h"
-#include "controller/controller.h"
+#include "controller/controller-state-machine.h"
 #include "printer/printer.h"
-#include "configuration/configuration.h"
+#include "configuration/configuration-state-machine.h"
 
 /**
  * Open Midi Controller
@@ -29,13 +29,7 @@
 #define FS_CONFIG_1 1
 #define FS_CONFIG_2 3
 
-LiquidCrystal_I2C lcd(0x27, 20, 4);
-Printer printer;
-
-OpenMidiControllerConfig config;
-Controller ctrl(ControllerState::SEND_COMMAND);
-Configuration configuration;
-
+// INIT FOOTSWITCHES
 Footswitch fs1(0, FS_1_PIN);
 Footswitch fs2(1, FS_2_PIN);
 Footswitch fs3(2, FS_3_PIN);
@@ -43,9 +37,16 @@ Footswitch fs4(3, FS_4_PIN);
 Footswitch fs5(4, FS_5_PIN);
 Footswitch fs6(5, FS_6_PIN);
 
-Footswitch* switches[6] = { &fs1, &fs2, &fs3, &fs4, &fs5, &fs6 };
+Footswitch* footswitches[6] = { &fs1, &fs2, &fs3, &fs4, &fs5, &fs6 };
 
-boolean modeShoudlChange = false;
+boolean modeShouldChange = false;
+
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+Printer printer;
+
+MidiControllerConfig config;
+ControllerStateMachine controllerStateMachine(ControllerState::SEND_COMMAND);
+ConfigurationStateMachine configurationStateMachine;
 
 void setup() {
   Serial.begin(9600);
@@ -54,14 +55,14 @@ void setup() {
 
   printer.welcome(lcd, 1);
 
-  for (Footswitch* fs : switches) { 
+  for (Footswitch* fs : footswitches) { 
     fs->init(); 
   }
 }
 
 void loop() {
 
-  for (Footswitch* fs : switches) {
+  for (Footswitch* fs : footswitches) {
     fs->scan();
   }
   
@@ -69,35 +70,35 @@ void loop() {
     return;
   }
 
-  if (ctrl.checkChanges()) {
+  if (controllerStateMachine.checkChanges()) {
     changeMode();
     return;
   }
   
-  if (ctrl.inState(ControllerState::CONFIGURE)) {
+  if (controllerStateMachine.inState(ControllerState::CONFIGURE)) {
     configure();
-  } else if (ctrl.inState(ControllerState::SEND_COMMAND)) {
+  } else if (controllerStateMachine.inState(ControllerState::SEND_COMMAND)) {
     sendCommands();
   }
 
 }
 
 boolean checkForModeChanges() {
-  ClickType configurationSwitch1Click = switches[FS_CONFIG_1]->checkClicked();
-  ClickType configurationSwitch2Click = switches[FS_CONFIG_2]->checkClicked();
+  FootswitchState fs1State = footswitches[FS_CONFIG_1]->checkClicked();
+  FootswitchState fs2State = footswitches[FS_CONFIG_2]->checkClicked();
 
-  if (configurationSwitch1Click == ClickType::PRESSED && configurationSwitch2Click == ClickType::PRESSED) {
-    modeShoudlChange = true;
+  if (fs1State == FootswitchState::PRESSED && fs2State == FootswitchState::PRESSED) {
+    modeShouldChange = true;
   }
 
-  if (configurationSwitch1Click == ClickType::NONE && configurationSwitch1Click == ClickType::NONE && modeShoudlChange) {
-    if (ctrl.inState(ControllerState::SEND_COMMAND)) {
-      ctrl.enterState(ControllerState::CONFIGURE);
-    } else if (ctrl.inState(ControllerState::CONFIGURE)) {
-      ctrl.enterState(ControllerState::SEND_COMMAND);
+  if (fs1State == FootswitchState::NONE && fs1State == FootswitchState::NONE && modeShouldChange) {
+    if (controllerStateMachine.inState(ControllerState::SEND_COMMAND)) {
+      controllerStateMachine.enterState(ControllerState::CONFIGURE);
+    } else if (controllerStateMachine.inState(ControllerState::CONFIGURE)) {
+      controllerStateMachine.enterState(ControllerState::SEND_COMMAND);
     }
 
-    modeShoudlChange = false;
+    modeShouldChange = false;
     return true;
   }
 
@@ -105,52 +106,60 @@ boolean checkForModeChanges() {
 }
 
 void configure() {
-  ConfigurationState configurationState = configuration.getState();
+  ConfigurationState configurationState = configurationStateMachine.getState();
   
+  // Select footswitch
   if (configurationState == ConfigurationState::SELECT_FOOTSWITCH) {
-    for (Footswitch* fs : switches) {
-      ClickType click = fs->checkClicked();
-      if (click == ClickType::NORMAL || click == ClickType::LONG) {
-        configuration.setFootswitch(fs->getNumber(), click == ClickType::LONG);
-        configuration.next();
-        printer.configurationPrompt(lcd, configuration.getState(), configuration.getValue());
+    for (Footswitch* fs : footswitches) {
+      FootswitchState click = fs->checkClicked();
+      if (click == FootswitchState::CLICK || click == FootswitchState::LONG_CLICK) {
+        configurationStateMachine.setFootswitch(fs->getNumber(), click == FootswitchState::LONG_CLICK);
+        configurationStateMachine.next();
+
+        printer.configurationPrompt(lcd, configurationStateMachine.getState(), configurationStateMachine.getValue());
       }
     }
-  } else if (switches[FS_CONFIG_1]->checkClicked() == ClickType::NORMAL && configurationState != ConfigurationState::EXIT) {
-    configuration.incrementValue();
-    printer.configurationPrompt(lcd, configuration.getState(), configuration.getValue());
-  } else if (switches[FS_CONFIG_2]->checkClicked() == ClickType::NORMAL && configurationState != ConfigurationState::EXIT) {
-    configuration.next();
 
-    ConfigurationState newState = configuration.getState();
+    return;
+  } 
+  
+  // Fill values
+  if (footswitches[FS_CONFIG_1]->checkClicked() == FootswitchState::CLICK && configurationState != ConfigurationState::EXIT) {
+    configurationStateMachine.incrementValue();
+    printer.configurationPrompt(lcd, configurationStateMachine.getState(), configurationStateMachine.getValue());
+  } else if (footswitches[FS_CONFIG_2]->checkClicked() == FootswitchState::CLICK && configurationState != ConfigurationState::EXIT) {
+    configurationStateMachine.next();
+
+    ConfigurationState newState = configurationStateMachine.getState();
+    
     if (newState == ConfigurationState::EXIT) {
       printer.selectFootswitchPrompt(lcd);
-      config.setButton(configuration.getFootswitch(), configuration.getControllerButton(), configuration.isLongClick());
-      configuration.reset();
+      config.setButton(configurationStateMachine.getFootswitch(), configurationStateMachine.getControllerButton(), configurationStateMachine.isLongClick());
+      configurationStateMachine.reset();
     } else {
-      printer.configurationPrompt(lcd, configuration.getState(), configuration.getValue());
+      printer.configurationPrompt(lcd, configurationStateMachine.getState(), configurationStateMachine.getValue());
     }
   }
 }
 
 void sendCommands() {
-  for (Footswitch* fs : switches) {
-    ClickType click = fs->checkClicked();
+  for (Footswitch* fs : footswitches) {
+    FootswitchState state = fs->checkClicked();
     int no = fs->getNumber();
 
-    if (click == ClickType::NORMAL || click == ClickType::LONG) {
-      ControllerButton btn = config.getButtonData(no, click == ClickType::LONG);
+    if (state & FootswitchState::ANY) {
+      ControllerButtonEntity btn = config.getButtonData(no, state == FootswitchState::LONG_CLICK);
       printer.commandInfo(lcd, no, &btn);
     }
   }
 }
 
 void changeMode() {
-  if (ctrl.inState(ControllerState::CONFIGURE)) {
+  if (controllerStateMachine.inState(ControllerState::CONFIGURE)) {
     printer.enterConfiguration(lcd);
     printer.selectFootswitchPrompt(lcd);
-    configuration.reset();
-  } else if (ctrl.inState(ControllerState::SEND_COMMAND)) {
+    configurationStateMachine.reset();
+  } else if (controllerStateMachine.inState(ControllerState::SEND_COMMAND)) {
     printer.leaveConfiguration(lcd);
   }  
 }

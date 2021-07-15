@@ -1,22 +1,22 @@
 #include <Arduino.h>
-#include "controller.h"
+#include "controller-state-machine.h"
 #include "controller-state.h"
 
-Controller::Controller(ControllerState initState) {
+ControllerStateMachine::ControllerStateMachine(ControllerState initState) {
     this->state = initState;
     this->stateChanged = false;
 }
 
-boolean Controller::inState(ControllerState state) {
+boolean ControllerStateMachine::inState(ControllerState state) {
     return state == this->state;
 }
 
-void Controller::enterState(ControllerState state) {
+void ControllerStateMachine::enterState(ControllerState state) {
     this->state = state;
     this->stateChanged = true;
 }
 
-boolean Controller::checkChanges() {
+boolean ControllerStateMachine::checkChanges() {
     boolean prevState = this->stateChanged;
     this->stateChanged = false;
 

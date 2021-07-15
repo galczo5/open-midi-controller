@@ -1,7 +1,7 @@
-#include "configuration.h"
+#include "configuration-state-machine.h"
 #include "configuration-state.h"
 #include "config/command-type.h"
-#include "config/controller-button.h"
+#include "config/controller-button-entity.h"
 
 #define CHANNEL 0
 #define TYPE 1
@@ -9,7 +9,7 @@
 #define VALUE2 3
 #define VALUE3 4
 
-void Configuration::reset() {
+void ConfigurationStateMachine::reset() {
     this->state = ConfigurationState::SELECT_FOOTSWITCH;
 
     this->value = 0;
@@ -22,7 +22,7 @@ void Configuration::reset() {
     this->configBytes[VALUE3] = 0;
 }
 
-void Configuration::next() {
+void ConfigurationStateMachine::next() {
     this->configBytes[this->state] = this->value;
 
     if (state == ConfigurationState::SELECT_VALUE2 && this->configBytes[TYPE] == CommandType::TOGGLE_CC) {
@@ -36,11 +36,11 @@ void Configuration::next() {
     this->value = 0;
 }
 
-ConfigurationState Configuration::getState() {
+ConfigurationState ConfigurationStateMachine::getState() {
     return this->state;
 }
 
-void Configuration::incrementValue() {
+void ConfigurationStateMachine::incrementValue() {
 
     int numberOfValues = 128;
 
@@ -51,21 +51,21 @@ void Configuration::incrementValue() {
     this->value = (this->value + 1) % numberOfValues;
 }
 
-byte Configuration::getValue() {
+byte ConfigurationStateMachine::getValue() {
     return this->value;
 }
 
-void Configuration::setFootswitch(int no, boolean longClick) {
+void ConfigurationStateMachine::setFootswitch(int no, boolean longClick) {
     this->footswitchNo = no;
     this->longClick = longClick;
 }
 
-int Configuration::getFootswitch() {
+int ConfigurationStateMachine::getFootswitch() {
     return this->footswitchNo;
 }
 
-ControllerButton Configuration::getControllerButton() {
-    ControllerButton button;
+ControllerButtonEntity ConfigurationStateMachine::getControllerButton() {
+    ControllerButtonEntity button;
     button.channel = this->configBytes[CHANNEL];
     button.type = this->configBytes[TYPE];
     button.value1 = this->configBytes[VALUE1];
@@ -75,6 +75,6 @@ ControllerButton Configuration::getControllerButton() {
     return button;
 }
 
-boolean Configuration::isLongClick() {
+boolean ConfigurationStateMachine::isLongClick() {
     return this->longClick;
 }

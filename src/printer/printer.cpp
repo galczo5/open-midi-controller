@@ -99,7 +99,7 @@ String Printer::valueToCommandTypeLabel(byte value) {
 
 }
 
-void Printer::commandInfo(LiquidCrystal_I2C lcd, int footswitchNo, ControllerButton* btn) {
+void Printer::commandInfo(LiquidCrystal_I2C lcd, int footswitchNo, ControllerButtonEntity* btn) {
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("FOOTSWITCH " + String(footswitchNo));

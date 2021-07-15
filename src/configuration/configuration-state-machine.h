@@ -3,9 +3,9 @@
 
 #include <Arduino.h>
 #include "configuration-state.h"
-#include "config/controller-button.h"
+#include "config/controller-button-entity.h"
 
-class Configuration {
+class ConfigurationStateMachine {
     private:
         ConfigurationState state;
         int footswitchNo;
@@ -26,7 +26,7 @@ class Configuration {
         int getFootswitch();
         boolean isLongClick();
 
-        ControllerButton getControllerButton();
+        ControllerButtonEntity getControllerButton();
 };
 
 #endif
