@@ -1,10 +1,11 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "open-midi-controller-config.h"
 #include "footswitch/click-type.h"
 
-OpenMidiControllerConfig::OpenMidiControllerConfig(byte data[]) {
+OpenMidiControllerConfig::OpenMidiControllerConfig() {
   for (int i = 0; i < BUFFER_SIZE; i++) {
-    this->storedData[i] = data[i];
+    this->storedData[i] = EEPROM.read(i);
   }
 }
 
@@ -35,6 +36,12 @@ void OpenMidiControllerConfig::setButton(int no, ControllerButton button, boolea
   this->storedData[index + 2] = button.value1;
   this->storedData[index + 3] = button.value2;
   this->storedData[index + 4] = button.value3;
+
+  EEPROM.write(index, button.channel);
+  EEPROM.write(index + 1, button.type);
+  EEPROM.write(index + 2, button.value1);
+  EEPROM.write(index + 3, button.value2);
+  EEPROM.write(index + 4, button.value3);
 }
 
 ControllerButton OpenMidiControllerConfig::createButton(byte channel, CommandType type, byte value1, byte value2, byte value3) {

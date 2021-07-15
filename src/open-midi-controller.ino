@@ -32,7 +32,7 @@
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 Printer printer;
 
-OpenMidiControllerConfig config({});
+OpenMidiControllerConfig config;
 Controller ctrl(ControllerState::SEND_COMMAND);
 Configuration configuration;
 

@@ -21,7 +21,7 @@ private:
   int page = 0;
 
 public:
-  OpenMidiControllerConfig(byte data[]);
+  OpenMidiControllerConfig();
   int getPage();
   
   ControllerButton getButtonData(int no, boolean longClick);
