@@ -9,14 +9,17 @@
 class Printer {
     private:
         String valueToCommandTypeLabel(byte value);
+        LiquidCrystal_I2C lcd;
 
     public:
-        void welcome(LiquidCrystal_I2C lcd, int revision);
-        void enterConfiguration(LiquidCrystal_I2C lcd);
-        void leaveConfiguration(LiquidCrystal_I2C lcd);
-        void selectFootswitchPrompt(LiquidCrystal_I2C lcd);
-        void configurationPrompt(LiquidCrystal_I2C lcd, ConfigurationState state, byte value);
-        void commandInfo(LiquidCrystal_I2C lcd, int footswitchNo, ControllerButtonEntity* btn);
+        Printer();
+        void init();
+        void welcome(int revision);
+        void enterConfiguration();
+        void leaveConfiguration();
+        void selectFootswitchPrompt();
+        void configurationPrompt(ConfigurationState state, byte value);
+        void commandInfo(int footswitchNo, ControllerButtonEntity* btn);
 };
 
 #endif

@@ -13,6 +13,7 @@ class ControllerStateMachine {
         ControllerStateMachine(ControllerState initState);
         boolean inState(ControllerState state);
         void enterState(ControllerState state);
+        void toggleState();
         boolean checkChanges();
 };
 

@@ -22,3 +22,11 @@ boolean ControllerStateMachine::checkChanges() {
 
     return prevState;
 }
+
+void ControllerStateMachine::toggleState() {
+    if (this->inState(ControllerState::SEND_COMMAND)) {
+      this->enterState(ControllerState::CONFIGURE);
+    } else if (this->inState(ControllerState::CONFIGURE)) {
+      this->enterState(ControllerState::SEND_COMMAND);
+    }
+}

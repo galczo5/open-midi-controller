@@ -1,4 +1,3 @@
-#include <LiquidCrystal_I2C.h>
 #include <MIDI.h>
 
 #include "config/midi-controller-config.h"
@@ -44,7 +43,6 @@ Footswitch* footswitches[6] = { &fs1, &fs2, &fs3, &fs4, &fs5, &fs6 };
 
 boolean modeShouldChange = false;
 
-LiquidCrystal_I2C lcd(0x27, 20, 4);
 Printer printer;
 
 MidiControllerConfig config;
@@ -54,14 +52,10 @@ CommandExecutor commandExecutor(&config);
 
 
 void setup() {
-  Serial.begin(9600);
-
   commandExecutor.init();
 
-  lcd.init();
-  lcd.backlight();
-
-  printer.welcome(lcd, 1);
+  printer.init();
+  printer.welcome(1);
 
   for (Footswitch* fs : footswitches) { 
     fs->init(); 
@@ -74,7 +68,7 @@ void loop() {
     fs->scan();
   }
   
-  if (checkForModeChanges()) {
+  if (configSwitchesPressed()) {
     return;
   }
 
@@ -91,7 +85,7 @@ void loop() {
 
 }
 
-boolean checkForModeChanges() {
+boolean configSwitchesPressed() {
   FootswitchState fs1State = footswitches[FS_CONFIG_1]->checkClicked();
   FootswitchState fs2State = footswitches[FS_CONFIG_2]->checkClicked();
 
@@ -100,12 +94,7 @@ boolean checkForModeChanges() {
   }
 
   if (fs1State == FootswitchState::NONE && fs1State == FootswitchState::NONE && modeShouldChange) {
-    if (controllerStateMachine.inState(ControllerState::SEND_COMMAND)) {
-      controllerStateMachine.enterState(ControllerState::CONFIGURE);
-    } else if (controllerStateMachine.inState(ControllerState::CONFIGURE)) {
-      controllerStateMachine.enterState(ControllerState::SEND_COMMAND);
-    }
-
+    controllerStateMachine.toggleState();
     modeShouldChange = false;
     return true;
   }
@@ -124,7 +113,7 @@ void configure() {
         configurationStateMachine.setFootswitch(fs->getNumber(), click == FootswitchState::LONG_CLICK);
         configurationStateMachine.next();
 
-        printer.configurationPrompt(lcd, configurationStateMachine.getState(), configurationStateMachine.getValue());
+        printer.configurationPrompt(configurationStateMachine.getState(), configurationStateMachine.getValue());
       }
     }
 
@@ -134,18 +123,18 @@ void configure() {
   // Fill values
   if (footswitches[FS_CONFIG_1]->checkClicked() == FootswitchState::CLICK && configurationState != ConfigurationState::EXIT) {
     configurationStateMachine.incrementValue();
-    printer.configurationPrompt(lcd, configurationStateMachine.getState(), configurationStateMachine.getValue());
+    printer.configurationPrompt(configurationStateMachine.getState(), configurationStateMachine.getValue());
   } else if (footswitches[FS_CONFIG_2]->checkClicked() == FootswitchState::CLICK && configurationState != ConfigurationState::EXIT) {
     configurationStateMachine.next();
 
     ConfigurationState newState = configurationStateMachine.getState();
     
     if (newState == ConfigurationState::EXIT) {
-      printer.selectFootswitchPrompt(lcd);
+      printer.selectFootswitchPrompt();
       config.setButton(configurationStateMachine.getFootswitch(), configurationStateMachine.getControllerButton(), configurationStateMachine.isLongClick());
       configurationStateMachine.reset();
     } else {
-      printer.configurationPrompt(lcd, configurationStateMachine.getState(), configurationStateMachine.getValue());
+      printer.configurationPrompt(configurationStateMachine.getState(), configurationStateMachine.getValue());
     }
   }
 }
@@ -158,17 +147,17 @@ void sendCommands() {
     if (state & FootswitchState::ANY) {
       ControllerButtonEntity btn = config.getButtonData(no, state == FootswitchState::LONG_CLICK);
       commandExecutor.executeCommand(no, state == FootswitchState::LONG_CLICK);
-      printer.commandInfo(lcd, no, &btn);
+      printer.commandInfo(no, &btn);
     }
   }
 }
 
 void changeMode() {
   if (controllerStateMachine.inState(ControllerState::CONFIGURE)) {
-    printer.enterConfiguration(lcd);
-    printer.selectFootswitchPrompt(lcd);
+    printer.enterConfiguration();
+    printer.selectFootswitchPrompt();
     configurationStateMachine.reset();
   } else if (controllerStateMachine.inState(ControllerState::SEND_COMMAND)) {
-    printer.leaveConfiguration(lcd);
+    printer.leaveConfiguration();
   }  
 }

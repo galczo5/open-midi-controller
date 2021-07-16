@@ -7,44 +7,52 @@
 
 #define MESSAGE_TIMEOUT 1500
 
-void Printer::welcome(LiquidCrystal_I2C lcd, int revision) {
-    lcd.setCursor(0, 0);
-    lcd.print("MIDI CONTROLLER");
-    lcd.setCursor(0, 1);
-    lcd.print("REVISION " + String(revision));
+Printer::Printer() : lcd(0x27, 20, 4) {
+}
+
+void Printer::init() {
+  lcd.init();
+  lcd.backlight();
+}
+
+void Printer::welcome(int revision) {
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("MIDI CONTROLLER");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print("REVISION " + String(revision));
     delay(MESSAGE_TIMEOUT);
-    lcd.clear();
+    this->lcd.clear();
 }
 
-void Printer::enterConfiguration(LiquidCrystal_I2C lcd) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("MIDI CONTROLLER");
-    lcd.setCursor(0, 1);
-    lcd.print("CONFIGURATION");
+void Printer::enterConfiguration() {
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("MIDI CONTROLLER");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print("CONFIGURATION");
     delay(MESSAGE_TIMEOUT);
-    lcd.clear();
+    this->lcd.clear();
 }
 
-void Printer::leaveConfiguration(LiquidCrystal_I2C lcd) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("MIDI CONTROLLER");
-    lcd.setCursor(0, 1);
-    lcd.print("SAVED");
+void Printer::leaveConfiguration() {
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("MIDI CONTROLLER");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print("SAVED");
     delay(MESSAGE_TIMEOUT);
-    lcd.clear();
+    this->lcd.clear();
 }
 
-void Printer::selectFootswitchPrompt(LiquidCrystal_I2C lcd) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("SELECT");
-    lcd.setCursor(0, 1);
-    lcd.print("FOOTSWITCH");
+void Printer::selectFootswitchPrompt() {
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("SELECT");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print("FOOTSWITCH");
 }
 
-void Printer::configurationPrompt(LiquidCrystal_I2C lcd, ConfigurationState state, byte value) {
+void Printer::configurationPrompt(ConfigurationState state, byte value) {
     String line1;
     String line2;
 
@@ -68,11 +76,11 @@ void Printer::configurationPrompt(LiquidCrystal_I2C lcd, ConfigurationState stat
         line2 = "STATE: " + String(state);
     }
 
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print(line1);
-    lcd.setCursor(0, 1);
-    lcd.print(line2);
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print(line1);
+    this->lcd.setCursor(0, 1);
+    this->lcd.print(line2);
 }
 
 String Printer::valueToCommandTypeLabel(byte value) {
@@ -99,20 +107,20 @@ String Printer::valueToCommandTypeLabel(byte value) {
 
 }
 
-void Printer::commandInfo(LiquidCrystal_I2C lcd, int footswitchNo, ControllerButtonEntity* btn) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("FOOTSWITCH " + String(footswitchNo));
-    lcd.setCursor(0, 1);
+void Printer::commandInfo(int footswitchNo, ControllerButtonEntity* btn) {
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("FOOTSWITCH " + String(footswitchNo));
+    this->lcd.setCursor(0, 1);
     if (btn->type == CommandType::TOGGLE_CC) {
-        lcd.print(
+        this->lcd.print(
             this->valueToCommandTypeLabel(CommandType::CC) + " " + 
             String(btn->value1) + " " + 
             String(btn->value2) + " " + 
             String(btn->value3)
         );
     } else {
-        lcd.print(
+        this->lcd.print(
             this->valueToCommandTypeLabel(btn->type) + " " + 
             String(btn->value1) + " " + 
             String(btn->value2)
