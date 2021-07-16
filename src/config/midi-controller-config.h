@@ -5,6 +5,7 @@
 #include "controller-button-entity.h"
 #include "command-type.h"
 
+#define PAGE_NO 5
 #define BUFFER_SIZE 300
 #define PAGE_SIZE 48
 #define BUTTON_SIZE 5
@@ -21,7 +22,9 @@ private:
 
 public:
   MidiControllerConfig();
+
   int getPage();
+  void setPage(int page);
   
   ControllerButtonEntity getButtonData(int no, boolean longClick);
   void setButton(int no, ControllerButtonEntity button, boolean longClick);

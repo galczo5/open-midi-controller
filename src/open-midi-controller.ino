@@ -1,10 +1,13 @@
 #include <LiquidCrystal_I2C.h>
+#include <MIDI.h>
+
 #include "config/midi-controller-config.h"
 #include "footswitch/footswitch.h"
 #include "config/command-type.h"
 #include "controller/controller-state-machine.h"
 #include "printer/printer.h"
 #include "configuration/configuration-state-machine.h"
+#include "executor/command-executor.h"
 
 /**
  * Open Midi Controller
@@ -47,9 +50,14 @@ Printer printer;
 MidiControllerConfig config;
 ControllerStateMachine controllerStateMachine(ControllerState::SEND_COMMAND);
 ConfigurationStateMachine configurationStateMachine;
+CommandExecutor commandExecutor(&config);
+
 
 void setup() {
   Serial.begin(9600);
+
+  commandExecutor.init();
+
   lcd.init();
   lcd.backlight();
 
@@ -149,6 +157,7 @@ void sendCommands() {
 
     if (state & FootswitchState::ANY) {
       ControllerButtonEntity btn = config.getButtonData(no, state == FootswitchState::LONG_CLICK);
+      commandExecutor.executeCommand(no, state == FootswitchState::LONG_CLICK);
       printer.commandInfo(lcd, no, &btn);
     }
   }

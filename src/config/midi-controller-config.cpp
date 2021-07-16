@@ -54,3 +54,7 @@ ControllerButtonEntity MidiControllerConfig::createButton(byte channel, CommandT
 
   return button;
 }
+
+void MidiControllerConfig::setPage(int page) {
+  this->page = page % PAGE_NO;
+}
