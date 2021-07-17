@@ -123,7 +123,12 @@ void configure() {
   // Fill values
   if (footswitches[FS_CONFIG_1]->checkClicked() == FootswitchState::CLICK && configurationState != ConfigurationState::EXIT) {
     configurationStateMachine.incrementValue();
-    printer.configurationPrompt(configurationStateMachine.getState(), configurationStateMachine.getValue());
+    printer.configurationPrompt(
+      configurationStateMachine.getState(), 
+      configurationStateMachine.getValue(), 
+      configurationStateMachine.getCommandType()
+    );
+
   } else if (footswitches[FS_CONFIG_2]->checkClicked() == FootswitchState::CLICK && configurationState != ConfigurationState::EXIT) {
     configurationStateMachine.next();
 
@@ -131,10 +136,20 @@ void configure() {
     
     if (newState == ConfigurationState::EXIT) {
       printer.selectFootswitchPrompt();
-      config.setButton(configurationStateMachine.getFootswitch(), configurationStateMachine.getControllerButton(), configurationStateMachine.isLongClick());
+      
+      config.setButton(
+        configurationStateMachine.getFootswitch(), 
+        configurationStateMachine.getControllerButton(), 
+        configurationStateMachine.isLongClick()
+      );
+
       configurationStateMachine.reset();
     } else {
-      printer.configurationPrompt(configurationStateMachine.getState(), configurationStateMachine.getValue());
+      printer.configurationPrompt(
+        configurationStateMachine.getState(), 
+        configurationStateMachine.getValue(),
+        configurationStateMachine.getCommandType()
+      );
     }
   }
 }
@@ -142,12 +157,16 @@ void configure() {
 void sendCommands() {
   for (Footswitch* fs : footswitches) {
     FootswitchState state = fs->checkClicked();
+
     int no = fs->getNumber();
+    int page = config.getPage();
 
     if (state & FootswitchState::ANY) {
-      ControllerButtonEntity btn = config.getButtonData(no, state == FootswitchState::LONG_CLICK);
-      commandExecutor.executeCommand(no, state == FootswitchState::LONG_CLICK);
-      printer.commandInfo(no, &btn);
+      boolean longClick = state == FootswitchState::LONG_CLICK;
+      ControllerButtonEntity btn = config.getButtonData(no, longClick);
+      commandExecutor.executeCommand(no, longClick);
+      printer.commandInfo(no, page, &btn);
+      return;
     }
   }
 }

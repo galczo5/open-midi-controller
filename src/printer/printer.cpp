@@ -52,7 +52,7 @@ void Printer::selectFootswitchPrompt() {
     this->lcd.print("FOOTSWITCH");
 }
 
-void Printer::configurationPrompt(ConfigurationState state, byte value) {
+void Printer::configurationPrompt(ConfigurationState state, byte value, CommandType commandType = CommandType::UNSET) {
     String line1;
     String line2;
 
@@ -63,7 +63,17 @@ void Printer::configurationPrompt(ConfigurationState state, byte value) {
         line1 = "COMMAND TYPE";
         line2 = this->valueToCommandTypeLabel(value);
     } else if (state == ConfigurationState::SELECT_VALUE1) {
-        line1 = "NOTE/CC/PAGE";
+
+        if (commandType == CommandType::CC || commandType == CommandType::TOGGLE_CC) {
+            line1 = "CC";
+        } else if (commandType == CommandType::NOTE) {
+            line1 = "NOTE";
+        } else if (commandType == CommandType::PAGE) {
+            line1 = "PAGE";
+        } else {
+            line1 = "VALUE";
+        }
+
         line2 = String(value);
     } else if (state == ConfigurationState::SELECT_VALUE2) {
         line1 = "VALUE";
@@ -107,19 +117,30 @@ String Printer::valueToCommandTypeLabel(byte value) {
 
 }
 
-void Printer::commandInfo(int footswitchNo, ControllerButtonEntity* btn) {
+void Printer::commandInfo(int footswitchNo, int page, ControllerButtonEntity* btn) {
     this->lcd.clear();
     this->lcd.setCursor(0, 0);
     this->lcd.print("FOOTSWITCH " + String(footswitchNo));
     this->lcd.setCursor(0, 1);
-    if (btn->type == CommandType::TOGGLE_CC) {
+
+    if (btn->type == CommandType::CC) {
+        this->lcd.print(
+            this->valueToCommandTypeLabel(CommandType::CC) + " " + String(btn->value1)
+        );
+    } else if (btn->type == CommandType::TOGGLE_CC) {
         this->lcd.print(
             this->valueToCommandTypeLabel(CommandType::CC) + " " + 
             String(btn->value1) + " " + 
             String(btn->value2) + " " + 
             String(btn->value3)
         );
-    } else {
+    } else if (btn->type == CommandType::PAGE || btn->type == CommandType::NEXT_PAGE || btn->type == CommandType::PREV_PAGE) {
+        this->lcd.print(
+            this->valueToCommandTypeLabel(CommandType::PAGE) + " " + String(page)
+        );
+    } else if (btn->type == CommandType::UNSET) {
+        this->lcd.print(this->valueToCommandTypeLabel(CommandType::UNSET));
+    } else if (btn->type == CommandType::NOTE) {
         this->lcd.print(
             this->valueToCommandTypeLabel(btn->type) + " " + 
             String(btn->value1) + " " + 

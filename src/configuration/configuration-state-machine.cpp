@@ -9,6 +9,16 @@
 #define VALUE2 3
 #define VALUE3 4
 
+int states[7][5] = {
+    { CommandType::UNSET, ConfigurationState::EXIT },
+    { CommandType::CC, ConfigurationState::SELECT_VALUE1, ConfigurationState::EXIT },
+    { CommandType::TOGGLE_CC, ConfigurationState::SELECT_VALUE1, ConfigurationState::SELECT_VALUE2, ConfigurationState::SELECT_VALUE3, ConfigurationState::EXIT },
+    { CommandType::NOTE, ConfigurationState::SELECT_VALUE1, ConfigurationState::SELECT_VALUE2, ConfigurationState::EXIT },
+    { CommandType::NEXT_PAGE, ConfigurationState::EXIT },
+    { CommandType::PREV_PAGE, ConfigurationState::EXIT },
+    { CommandType::PAGE, ConfigurationState::SELECT_VALUE1, ConfigurationState::EXIT }
+};
+
 void ConfigurationStateMachine::reset() {
     this->state = ConfigurationState::SELECT_FOOTSWITCH;
 
@@ -24,16 +34,23 @@ void ConfigurationStateMachine::reset() {
 
 void ConfigurationStateMachine::next() {
     this->configBytes[this->state] = this->value;
+    this->value = 0;
 
-    if (state == ConfigurationState::SELECT_VALUE2 && this->configBytes[TYPE] == CommandType::TOGGLE_CC) {
-        this->state = ConfigurationState::SELECT_VALUE3;
-    } else if (state == ConfigurationState::SELECT_VALUE2) {
-        this->state = ConfigurationState::EXIT;
-    } else {
-        this->state = static_cast<ConfigurationState>(this->state + 1);
+    if (state < TYPE) {
+        return;
     }
 
-    this->value = 0;
+    for (int i = 0; i < 7; i++) {
+        boolean typeMatches = states[i][0] == this->configBytes[TYPE];
+        if (typeMatches) {
+            for (int j = 0; j < 5; j++) {
+                if (states[i][j] == this->state) {
+                    this->state = static_cast<ConfigurationState>(states[i][j + 1]);
+                    return;
+                }
+            }
+        }
+    }
 }
 
 ConfigurationState ConfigurationStateMachine::getState() {
@@ -45,7 +62,9 @@ void ConfigurationStateMachine::incrementValue() {
     int numberOfValues = 128;
 
     if (this->state == ConfigurationState::SELECT_TYPE) {
-        numberOfValues = 6;
+        numberOfValues = 7;
+    } else if (this->state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::PAGE) {
+        numberOfValues = 5;
     }
 
     this->value = (this->value + 1) % numberOfValues;
@@ -77,4 +96,9 @@ ControllerButtonEntity ConfigurationStateMachine::getControllerButton() {
 
 boolean ConfigurationStateMachine::isLongClick() {
     return this->longClick;
+}
+
+
+CommandType ConfigurationStateMachine::getCommandType() {
+    return static_cast<CommandType>(this->configBytes[TYPE]);
 }

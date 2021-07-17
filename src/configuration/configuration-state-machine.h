@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "configuration-state.h"
 #include "config/controller-button-entity.h"
+#include "config/command-type.h"
 
 class ConfigurationStateMachine {
     private:
@@ -27,6 +28,7 @@ class ConfigurationStateMachine {
         boolean isLongClick();
 
         ControllerButtonEntity getControllerButton();
+        CommandType getCommandType();
 };
 
 #endif
