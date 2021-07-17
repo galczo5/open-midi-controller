@@ -3,6 +3,7 @@
 #include "midi-controller-config.h"
 
 MidiControllerConfig::MidiControllerConfig() {
+  this->page = 0;
   for (int i = 0; i < BUFFER_SIZE; i++) {
     this->storedData[i] = EEPROM.read(i);
   }
@@ -57,4 +58,8 @@ ControllerButtonEntity MidiControllerConfig::createButton(byte channel, CommandT
 
 void MidiControllerConfig::setPage(int page) {
   this->page = page % PAGE_NO;
+
+  if (this->page < 0) {
+    this->page = PAGE_NO - 1;
+  }
 }

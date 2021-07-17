@@ -22,6 +22,10 @@ void Printer::welcome(int revision) {
     this->lcd.print("REVISION " + String(revision));
     delay(MESSAGE_TIMEOUT);
     this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("PRESS ANY");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print("FOOTSWITCH");
 }
 
 void Printer::enterConfiguration() {
@@ -120,7 +124,9 @@ String Printer::valueToCommandTypeLabel(byte value) {
 void Printer::commandInfo(int footswitchNo, int page, ControllerButtonEntity* btn) {
     this->lcd.clear();
     this->lcd.setCursor(0, 0);
-    this->lcd.print("FOOTSWITCH " + String(footswitchNo));
+    this->lcd.print("FS " + String(footswitchNo + 1));
+    this->lcd.setCursor(10, 0);
+    this->lcd.print("PAGE " + String(page + 1));
     this->lcd.setCursor(0, 1);
 
     if (btn->type == CommandType::CC) {
@@ -136,7 +142,7 @@ void Printer::commandInfo(int footswitchNo, int page, ControllerButtonEntity* bt
         );
     } else if (btn->type == CommandType::PAGE || btn->type == CommandType::NEXT_PAGE || btn->type == CommandType::PREV_PAGE) {
         this->lcd.print(
-            this->valueToCommandTypeLabel(CommandType::PAGE) + " " + String(page)
+            this->valueToCommandTypeLabel(CommandType::PAGE) + " " + String(page + 1)
         );
     } else if (btn->type == CommandType::UNSET) {
         this->lcd.print(this->valueToCommandTypeLabel(CommandType::UNSET));

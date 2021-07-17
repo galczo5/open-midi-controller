@@ -45,13 +45,14 @@ boolean modeShouldChange = false;
 
 Printer printer;
 
-MidiControllerConfig config;
+MidiControllerConfig *config = new MidiControllerConfig();
 ControllerStateMachine controllerStateMachine(ControllerState::SEND_COMMAND);
 ConfigurationStateMachine configurationStateMachine;
-CommandExecutor commandExecutor(&config);
+CommandExecutor commandExecutor(config);
 
 
 void setup() {
+  Serial.begin(9600);
   commandExecutor.init();
 
   printer.init();
@@ -137,7 +138,7 @@ void configure() {
     if (newState == ConfigurationState::EXIT) {
       printer.selectFootswitchPrompt();
       
-      config.setButton(
+      config->setButton(
         configurationStateMachine.getFootswitch(), 
         configurationStateMachine.getControllerButton(), 
         configurationStateMachine.isLongClick()
@@ -159,12 +160,13 @@ void sendCommands() {
     FootswitchState state = fs->checkClicked();
 
     int no = fs->getNumber();
-    int page = config.getPage();
 
     if (state & FootswitchState::ANY) {
       boolean longClick = state == FootswitchState::LONG_CLICK;
-      ControllerButtonEntity btn = config.getButtonData(no, longClick);
+      ControllerButtonEntity btn = config->getButtonData(no, longClick);
       commandExecutor.executeCommand(no, longClick);
+
+      int page = config->getPage();
       printer.commandInfo(no, page, &btn);
       return;
     }

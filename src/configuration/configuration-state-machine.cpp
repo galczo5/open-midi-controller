@@ -36,20 +36,20 @@ void ConfigurationStateMachine::next() {
     this->configBytes[this->state] = this->value;
     this->value = 0;
 
-    if (state < TYPE) {
-        return;
-    }
-
-    for (int i = 0; i < 7; i++) {
-        boolean typeMatches = states[i][0] == this->configBytes[TYPE];
-        if (typeMatches) {
-            for (int j = 0; j < 5; j++) {
-                if (states[i][j] == this->state) {
-                    this->state = static_cast<ConfigurationState>(states[i][j + 1]);
-                    return;
-                }
-            }
-        }
+    if (this->state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::CC) {
+        this->state = ConfigurationState::EXIT;
+    } else if (this->state == ConfigurationState::SELECT_VALUE2 && this->configBytes[TYPE] == CommandType::NOTE) {
+        this->state = ConfigurationState::EXIT;
+    } else if (this->state == ConfigurationState::SELECT_TYPE && this->configBytes[TYPE] == CommandType::NEXT_PAGE) {
+        this->state = ConfigurationState::EXIT;
+    } else if (this->state == ConfigurationState::SELECT_TYPE && this->configBytes[TYPE] == CommandType::PREV_PAGE) {
+        this->state = ConfigurationState::EXIT;
+    } else if (this->state == ConfigurationState::SELECT_TYPE && this->configBytes[TYPE] == CommandType::UNSET) {
+        this->state = ConfigurationState::EXIT;
+    } else if (this->state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::PAGE) {
+        this->state = ConfigurationState::EXIT;
+    } else {
+        this->state = static_cast<ConfigurationState>(this->state + 1);
     }
 }
 

@@ -45,18 +45,20 @@ void CommandExecutor::executeCommand(int no, boolean longClick) {
 
     ControllerButtonEntity entity = this->config->getButtonData(no, longClick);
 
-    int page = config->getPage();
+    int page = this->config->getPage();
 
     switch (entity.type) {
-        case CommandType::NOTE:
+        case byte(CommandType::NOTE): {
             MIDI.sendNoteOn(entity.value1, 127, entity.channel);
             break;
+        }
 
-        case CommandType::CC:
+        case byte(CommandType::CC): {
             MIDI.sendControlChange(entity.value1, 127, entity.channel);
             break;
+        }
 
-        case CommandType::TOGGLE_CC:
+        case byte(CommandType::TOGGLE_CC): {
             int lastValue = this->getLastValue(no, page);
 
             byte valueToSend = entity.value2 != lastValue 
@@ -66,18 +68,22 @@ void CommandExecutor::executeCommand(int no, boolean longClick) {
             MIDI.sendControlChange(entity.value1, valueToSend, entity.channel);
             this->saveToggleHistory(no, page, valueToSend);
             break;
+        }
 
-        case CommandType::NEXT_PAGE:
-            config->setPage(page + 1);
+        case byte(CommandType::NEXT_PAGE): {
+            this->config->setPage(page + 1);
             break;
+        }
 
-        case CommandType::PREV_PAGE:
-            config->setPage(page - 1);
+        case byte(CommandType::PREV_PAGE): {
+            this->config->setPage(page - 1);
             break;
+        }
 
-        case CommandType::PAGE:
-            config->setPage(entity.value1);
+        case byte(CommandType::PAGE): {
+            this->config->setPage(entity.value1);
             break;
+        }
     
     }
 
