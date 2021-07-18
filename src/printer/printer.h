@@ -5,6 +5,7 @@
 #include <LiquidCrystal_I2C.h>
 #include "configuration/configuration-state.h"
 #include "config/controller-button-entity.h"
+#include "config/midi-controller-config.h"
 #include "config/command-type.h"
 
 class Printer {
@@ -21,6 +22,7 @@ class Printer {
         void selectFootswitchPrompt();
         void configurationPrompt(ConfigurationState state, byte value, CommandType commandType = CommandType::UNSET);
         void commandInfo(int footswitchNo, int page, ControllerButtonEntity* btn);
+        void printConfigPage(MidiControllerConfig *config);
 };
 
 #endif

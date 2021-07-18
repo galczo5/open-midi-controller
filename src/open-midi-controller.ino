@@ -31,6 +31,9 @@
 #define FS_CONFIG_1 1
 #define FS_CONFIG_2 3
 
+#define FS_INFO_1 0
+#define FS_INFO_2 2
+
 // INIT FOOTSWITCHES
 Footswitch fs1(0, FS_1_PIN);
 Footswitch fs2(1, FS_2_PIN);
@@ -42,6 +45,7 @@ Footswitch fs6(5, FS_6_PIN);
 Footswitch* footswitches[6] = { &fs1, &fs2, &fs3, &fs4, &fs5, &fs6 };
 
 boolean modeShouldChange = false;
+boolean infoShouldBePrinted = false;
 
 Printer printer;
 
@@ -69,6 +73,10 @@ void loop() {
     fs->scan();
   }
   
+  if (infoSwitchesPressed()) {
+    return;
+  }
+
   if (configSwitchesPressed()) {
     return;
   }
@@ -83,6 +91,24 @@ void loop() {
   } else if (controllerStateMachine.inState(ControllerState::SEND_COMMAND)) {
     sendCommands();
   }
+
+}
+
+boolean infoSwitchesPressed() {
+  FootswitchState fs1State = footswitches[FS_INFO_1]->checkClicked();
+  FootswitchState fs2State = footswitches[FS_INFO_2]->checkClicked();
+
+  if (fs1State == FootswitchState::PRESSED && fs2State == FootswitchState::PRESSED) {
+    infoShouldBePrinted = true;
+  }
+
+  if (fs1State == FootswitchState::NONE && fs1State == FootswitchState::NONE && infoShouldBePrinted) {
+    infoShouldBePrinted = false;
+    printer.printConfigPage(config);
+    return true;
+  }
+
+  return false;
 
 }
 

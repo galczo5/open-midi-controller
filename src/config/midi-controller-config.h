@@ -5,6 +5,7 @@
 #include "controller-button-entity.h"
 #include "command-type.h"
 
+#define BUTTON_NO 6
 #define PAGE_NO 5
 #define BUFFER_SIZE 300
 #define PAGE_SIZE 48

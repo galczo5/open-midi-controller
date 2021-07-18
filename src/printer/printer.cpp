@@ -152,6 +152,38 @@ void Printer::commandInfo(int footswitchNo, int page, ControllerButtonEntity* bt
             String(btn->value1) + " " + 
             String(btn->value2)
         );
+    } else {
+        this->lcd.print("EMPTY");
     }
     
+}
+
+void Printer::printConfigPage(MidiControllerConfig *config) {
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("CURRENT");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print("CONFIGURATION");
+    delay(MESSAGE_TIMEOUT);
+
+    for (int i = 0; i < BUTTON_NO; i++) {
+        this->lcd.clear();
+        this->commandInfo(i, config->getPage(), &config->getButtonData(i, false));
+        delay(MESSAGE_TIMEOUT);
+    }
+
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("LONG CLICK");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print("CONFIGURATION");
+    delay(MESSAGE_TIMEOUT);
+
+    for (int i = 0; i < BUTTON_NO; i++) {
+        this->lcd.clear();
+        this->commandInfo(i, config->getPage(), &config->getButtonData(i, true));
+        delay(MESSAGE_TIMEOUT);
+    }
+
+    this->lcd.clear();
 }
