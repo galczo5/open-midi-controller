@@ -8,10 +8,10 @@
 
 class ConfigurationStateMachine {
     private:
+        byte configBytes[5];
         ConfigurationState state;
         int footswitchNo;
         byte value;
-        byte configBytes[5];
         boolean longClick;
 
     public:
@@ -21,6 +21,7 @@ class ConfigurationStateMachine {
         ConfigurationState getState();
         
         void incrementValue();
+        void decrementValue();
         byte getValue();
 
         void setFootswitch(int no, boolean longClick);

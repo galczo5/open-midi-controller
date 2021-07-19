@@ -6,7 +6,7 @@
 #include "config/controller-button-entity.h"
 #include "config/midi-controller-config.h"
 
-#define TOGGLE_HISTORY_SIZE 10
+#define TOGGLE_HISTORY_SIZE 20
 
 class CommandExecutor {
     private:
@@ -19,11 +19,13 @@ class CommandExecutor {
         int getLastValue(int no, int page);
         String composeKey(int no, int page);
         void saveToggleHistory(int no, int page, byte value);
+        byte lastValue;
 
     public:
         CommandExecutor(MidiControllerConfig* config);
         void init();
         void executeCommand(int no, boolean longClick);
+        byte getExecutedValue();
 
 };
 

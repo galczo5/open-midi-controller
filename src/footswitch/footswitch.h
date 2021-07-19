@@ -9,6 +9,7 @@ class Footswitch {
 		int pin;
 		int no;
 		unsigned long timeClicked;
+		unsigned long timeRepeated;
 		boolean buttonDown;
 		FootswitchState click;
 		

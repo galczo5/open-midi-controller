@@ -8,6 +8,7 @@
 #define BUTTON_NO 6
 #define PAGE_NO 5
 #define BUFFER_SIZE 300
+#define LONG_CLICK_BUFFER_START 150
 #define PAGE_SIZE 48
 #define BUTTON_SIZE 5
 
@@ -30,7 +31,6 @@ public:
   ControllerButtonEntity getButtonData(int no, boolean longClick);
   void setButton(int no, ControllerButtonEntity button, boolean longClick);
 
-  static ControllerButtonEntity createButton(byte channel, CommandType type, byte value1, byte value2, byte value3);
 };
 
 #endif

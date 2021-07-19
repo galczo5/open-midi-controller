@@ -15,11 +15,11 @@ void Printer::init() {
   lcd.backlight();
 }
 
-void Printer::welcome(int revision) {
+void Printer::welcome(String revision) {
     this->lcd.setCursor(0, 0);
     this->lcd.print("MIDI CONTROLLER");
     this->lcd.setCursor(0, 1);
-    this->lcd.print("REVISION " + String(revision));
+    this->lcd.print("REV. " + revision);
     delay(MESSAGE_TIMEOUT);
     this->lcd.clear();
     this->lcd.setCursor(0, 0);
@@ -121,7 +121,7 @@ String Printer::valueToCommandTypeLabel(byte value) {
 
 }
 
-void Printer::commandInfo(int footswitchNo, int page, ControllerButtonEntity* btn) {
+void Printer::commandInfo(int footswitchNo, int page, ControllerButtonEntity btn, byte lastValue) {
     this->lcd.clear();
     this->lcd.setCursor(0, 0);
     this->lcd.print("FS " + String(footswitchNo + 1));
@@ -129,28 +129,37 @@ void Printer::commandInfo(int footswitchNo, int page, ControllerButtonEntity* bt
     this->lcd.print("PAGE " + String(page + 1));
     this->lcd.setCursor(0, 1);
 
-    if (btn->type == CommandType::CC) {
+    if (btn.type == CommandType::CC) {
         this->lcd.print(
-            this->valueToCommandTypeLabel(CommandType::CC) + " " + String(btn->value1)
+            this->valueToCommandTypeLabel(CommandType::CC) + " " + String(btn.value1) + " " + String(btn.value2)
         );
-    } else if (btn->type == CommandType::TOGGLE_CC) {
+    } else if (btn.type == CommandType::TOGGLE_CC) {
+
+        String value2 = btn.value2 == lastValue 
+            ? "(" + String(btn.value2) + ")" 
+            : String(btn.value2);
+
+        String value3 = btn.value3 == lastValue 
+            ? "(" + String(btn.value3) + ")" 
+            : String(btn.value3);
+
         this->lcd.print(
             this->valueToCommandTypeLabel(CommandType::CC) + " " + 
-            String(btn->value1) + " " + 
-            String(btn->value2) + " " + 
-            String(btn->value3)
+            String(btn.value1) + " " + 
+            value2 + " " + 
+            value3
         );
-    } else if (btn->type == CommandType::PAGE || btn->type == CommandType::NEXT_PAGE || btn->type == CommandType::PREV_PAGE) {
+    } else if (btn.type == CommandType::PAGE || btn.type == CommandType::NEXT_PAGE || btn.type == CommandType::PREV_PAGE) {
         this->lcd.print(
             this->valueToCommandTypeLabel(CommandType::PAGE) + " " + String(page + 1)
         );
-    } else if (btn->type == CommandType::UNSET) {
+    } else if (btn.type == CommandType::UNSET) {
         this->lcd.print(this->valueToCommandTypeLabel(CommandType::UNSET));
-    } else if (btn->type == CommandType::NOTE) {
+    } else if (btn.type == CommandType::NOTE) {
         this->lcd.print(
-            this->valueToCommandTypeLabel(btn->type) + " " + 
-            String(btn->value1) + " " + 
-            String(btn->value2)
+            this->valueToCommandTypeLabel(btn.type) + " " + 
+            String(btn.value1) + " " + 
+            String(btn.value2)
         );
     } else {
         this->lcd.print("EMPTY");
@@ -168,7 +177,8 @@ void Printer::printConfigPage(MidiControllerConfig *config) {
 
     for (int i = 0; i < BUTTON_NO; i++) {
         this->lcd.clear();
-        this->commandInfo(i, config->getPage(), &config->getButtonData(i, false));
+        ControllerButtonEntity btn = config->getButtonData(i, false);
+        this->commandInfo(i, config->getPage(), btn, 0);
         delay(MESSAGE_TIMEOUT);
     }
 
@@ -181,9 +191,18 @@ void Printer::printConfigPage(MidiControllerConfig *config) {
 
     for (int i = 0; i < BUTTON_NO; i++) {
         this->lcd.clear();
-        this->commandInfo(i, config->getPage(), &config->getButtonData(i, true));
+        ControllerButtonEntity btn = config->getButtonData(i, true);
+        this->commandInfo(i, config->getPage(), btn, 0);
         delay(MESSAGE_TIMEOUT);
     }
 
     this->lcd.clear();
+}
+
+void Printer::debug(String value) {
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("DEBUG");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print(value);
 }

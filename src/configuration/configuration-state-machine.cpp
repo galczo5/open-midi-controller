@@ -9,16 +9,6 @@
 #define VALUE2 3
 #define VALUE3 4
 
-int states[7][5] = {
-    { CommandType::UNSET, ConfigurationState::EXIT },
-    { CommandType::CC, ConfigurationState::SELECT_VALUE1, ConfigurationState::EXIT },
-    { CommandType::TOGGLE_CC, ConfigurationState::SELECT_VALUE1, ConfigurationState::SELECT_VALUE2, ConfigurationState::SELECT_VALUE3, ConfigurationState::EXIT },
-    { CommandType::NOTE, ConfigurationState::SELECT_VALUE1, ConfigurationState::SELECT_VALUE2, ConfigurationState::EXIT },
-    { CommandType::NEXT_PAGE, ConfigurationState::EXIT },
-    { CommandType::PREV_PAGE, ConfigurationState::EXIT },
-    { CommandType::PAGE, ConfigurationState::SELECT_VALUE1, ConfigurationState::EXIT }
-};
-
 void ConfigurationStateMachine::reset() {
     this->state = ConfigurationState::SELECT_FOOTSWITCH;
 
@@ -36,7 +26,7 @@ void ConfigurationStateMachine::next() {
     this->configBytes[this->state] = this->value;
     this->value = 0;
 
-    if (this->state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::CC) {
+    if (this->state == ConfigurationState::SELECT_VALUE2 && this->configBytes[TYPE] == CommandType::CC) {
         this->state = ConfigurationState::EXIT;
     } else if (this->state == ConfigurationState::SELECT_VALUE2 && this->configBytes[TYPE] == CommandType::NOTE) {
         this->state = ConfigurationState::EXIT;
@@ -70,6 +60,25 @@ void ConfigurationStateMachine::incrementValue() {
     this->value = (this->value + 1) % numberOfValues;
 }
 
+void ConfigurationStateMachine::decrementValue() {
+
+    int numberOfValues = 128;
+
+    if (this->state == ConfigurationState::SELECT_TYPE) {
+        numberOfValues = 7;
+    } else if (this->state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::PAGE) {
+        numberOfValues = 5;
+    }
+
+    int newValue = this->value - 1;
+    if (newValue < 0) {
+        newValue = numberOfValues - 1;
+    }
+
+    this->value = newValue % numberOfValues;
+}
+
+
 byte ConfigurationStateMachine::getValue() {
     return this->value;
 }
@@ -84,12 +93,13 @@ int ConfigurationStateMachine::getFootswitch() {
 }
 
 ControllerButtonEntity ConfigurationStateMachine::getControllerButton() {
-    ControllerButtonEntity button;
-    button.channel = this->configBytes[CHANNEL];
-    button.type = this->configBytes[TYPE];
-    button.value1 = this->configBytes[VALUE1];
-    button.value2 = this->configBytes[VALUE2];
-    button.value2 = this->configBytes[VALUE3];
+    ControllerButtonEntity button = {
+        this->configBytes[CHANNEL],
+        this->configBytes[TYPE],
+        this->configBytes[VALUE1],
+        this->configBytes[VALUE2],
+        this->configBytes[VALUE3]
+    };
 
     return button;
 }

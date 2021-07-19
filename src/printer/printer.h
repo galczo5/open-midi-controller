@@ -16,13 +16,14 @@ class Printer {
     public:
         Printer();
         void init();
-        void welcome(int revision);
+        void welcome(String revision);
         void enterConfiguration();
         void leaveConfiguration();
         void selectFootswitchPrompt();
         void configurationPrompt(ConfigurationState state, byte value, CommandType commandType = CommandType::UNSET);
-        void commandInfo(int footswitchNo, int page, ControllerButtonEntity* btn);
+        void commandInfo(int footswitchNo, int page, ControllerButtonEntity btn, byte lastValue);
         void printConfigPage(MidiControllerConfig *config);
+        void debug(String value);
 };
 
 #endif

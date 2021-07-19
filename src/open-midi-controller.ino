@@ -1,3 +1,5 @@
+#define REVISION "20210718"
+
 #include <MIDI.h>
 
 #include "config/midi-controller-config.h"
@@ -30,6 +32,7 @@
 
 #define FS_CONFIG_1 1
 #define FS_CONFIG_2 3
+#define FS_CONFIG_DECREMENT 0
 
 #define FS_INFO_1 0
 #define FS_INFO_2 2
@@ -56,11 +59,10 @@ CommandExecutor commandExecutor(config);
 
 
 void setup() {
-  Serial.begin(9600);
   commandExecutor.init();
 
   printer.init();
-  printer.welcome(1);
+  printer.welcome(REVISION);
 
   for (Footswitch* fs : footswitches) { 
     fs->init(); 
@@ -120,7 +122,7 @@ boolean configSwitchesPressed() {
     modeShouldChange = true;
   }
 
-  if (fs1State == FootswitchState::NONE && fs1State == FootswitchState::NONE && modeShouldChange) {
+  if (fs1State == FootswitchState::NONE && modeShouldChange) {
     controllerStateMachine.toggleState();
     modeShouldChange = false;
     return true;
@@ -156,21 +158,28 @@ void configure() {
       configurationStateMachine.getCommandType()
     );
 
+  } else if (footswitches[FS_CONFIG_DECREMENT]->checkClicked() == FootswitchState::CLICK && configurationState != ConfigurationState::EXIT) {
+    configurationStateMachine.decrementValue();
+    printer.configurationPrompt(
+      configurationStateMachine.getState(), 
+      configurationStateMachine.getValue(), 
+      configurationStateMachine.getCommandType()
+    );
+
   } else if (footswitches[FS_CONFIG_2]->checkClicked() == FootswitchState::CLICK && configurationState != ConfigurationState::EXIT) {
     configurationStateMachine.next();
 
     ConfigurationState newState = configurationStateMachine.getState();
     
     if (newState == ConfigurationState::EXIT) {
-      printer.selectFootswitchPrompt();
-      
       config->setButton(
         configurationStateMachine.getFootswitch(), 
-        configurationStateMachine.getControllerButton(), 
+        configurationStateMachine.getControllerButton(),
         configurationStateMachine.isLongClick()
       );
 
       configurationStateMachine.reset();
+      printer.selectFootswitchPrompt();
     } else {
       printer.configurationPrompt(
         configurationStateMachine.getState(), 
@@ -185,15 +194,14 @@ void sendCommands() {
   for (Footswitch* fs : footswitches) {
     FootswitchState state = fs->checkClicked();
 
-    int no = fs->getNumber();
-
     if (state & FootswitchState::ANY) {
+      int no = fs->getNumber();
       boolean longClick = state == FootswitchState::LONG_CLICK;
       ControllerButtonEntity btn = config->getButtonData(no, longClick);
       commandExecutor.executeCommand(no, longClick);
 
       int page = config->getPage();
-      printer.commandInfo(no, page, &btn);
+      printer.commandInfo(no, page, btn, commandExecutor.getExecutedValue());
       return;
     }
   }

@@ -28,12 +28,19 @@ void Footswitch::scan() {
     FootswitchState result = FootswitchState::NONE;
 
     if (state == LOW) {
-        if (!this->buttonDown) {
-            this->timeClicked = millis();
-            this->buttonDown = true;
-        }
 
-        result = FootswitchState::PRESSED;
+        unsigned long now = millis();
+
+        if (!this->buttonDown) {
+            this->timeClicked = now;
+            this->timeRepeated = now;
+            this->buttonDown = true;
+        } else if (now - this->timeClicked > 3000 && now - this->timeRepeated > 100) {
+            this->timeRepeated = now;
+            result = FootswitchState::CLICK;
+        } else {
+            result = FootswitchState::PRESSED;
+        }
 
     } else if (state == HIGH && this->buttonDown) {
         this->buttonDown = false;

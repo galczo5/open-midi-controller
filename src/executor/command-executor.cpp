@@ -19,7 +19,7 @@ int CommandExecutor::getLastValue(int no, int page) {
     int keyIndex = -1;
 
     for (int i = 0; i < TOGGLE_HISTORY_SIZE; i++) {
-        if (this->toggleKeys[i].equals(key)) {
+        if (this->toggleKeys[i] == key) {
             keyIndex = i;
         }
     }
@@ -36,9 +36,17 @@ String CommandExecutor::composeKey(int no, int page) {
 }
 
 void CommandExecutor::saveToggleHistory(int no, int page, byte value) {
-    this->toggleKeys[this->toggleIterator] = this->composeKey(no, page);
+    String key = this->composeKey(no, page);
+    for (int i = 0; i < TOGGLE_HISTORY_SIZE; i++) {
+        if (this->toggleKeys[i] == key) {
+            this->toggleValues[i] = value;
+            return;        
+        }
+    }
+
+    this->toggleKeys[this->toggleIterator] = key;
     this->toggleValues[this->toggleIterator] = value;
-    this->toggleIterator++;
+    this->toggleIterator = (this->toggleIterator + 1) % TOGGLE_HISTORY_SIZE;
 }
 
 void CommandExecutor::executeCommand(int no, boolean longClick) {
@@ -50,11 +58,13 @@ void CommandExecutor::executeCommand(int no, boolean longClick) {
     switch (entity.type) {
         case byte(CommandType::NOTE): {
             MIDI.sendNoteOn(entity.value1, 127, entity.channel);
+            this->lastValue = 127;
             break;
         }
 
         case byte(CommandType::CC): {
-            MIDI.sendControlChange(entity.value1, 127, entity.channel);
+            MIDI.sendControlChange(entity.value1, entity.value2, entity.channel);
+            this->lastValue = entity.value2;
             break;
         }
 
@@ -67,6 +77,7 @@ void CommandExecutor::executeCommand(int no, boolean longClick) {
 
             MIDI.sendControlChange(entity.value1, valueToSend, entity.channel);
             this->saveToggleHistory(no, page, valueToSend);
+            this->lastValue = valueToSend;
             break;
         }
 
@@ -87,4 +98,8 @@ void CommandExecutor::executeCommand(int no, boolean longClick) {
     
     }
 
+}
+
+byte CommandExecutor::getExecutedValue() {
+    return this->lastValue;
 }
