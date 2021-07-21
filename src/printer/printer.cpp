@@ -104,7 +104,7 @@ String Printer::valueToCommandTypeLabel(byte value) {
 
     switch (value) {
     case CommandType::UNSET:
-        return "UNSET";
+        return "EMPTY";
     case CommandType::NOTE:
         return "NOTE";
     case CommandType::CC:
