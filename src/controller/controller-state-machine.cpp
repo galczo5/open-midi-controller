@@ -7,8 +7,8 @@ ControllerStateMachine::ControllerStateMachine(ControllerState initState) {
     this->stateChanged = false;
 }
 
-boolean ControllerStateMachine::inState(ControllerState state) {
-    return state == this->state;
+ControllerState ControllerStateMachine::getState() {
+    return this->state;
 }
 
 void ControllerStateMachine::enterState(ControllerState state) {
@@ -24,9 +24,9 @@ boolean ControllerStateMachine::checkChanges() {
 }
 
 void ControllerStateMachine::toggleState() {
-    if (this->inState(ControllerState::SEND_COMMAND)) {
+    if (this->getState() == ControllerState::SEND_COMMAND) {
       this->enterState(ControllerState::CONFIGURE);
-    } else if (this->inState(ControllerState::CONFIGURE)) {
+    } else if (this->getState() == ControllerState::CONFIGURE) {
       this->enterState(ControllerState::SEND_COMMAND);
     }
 }

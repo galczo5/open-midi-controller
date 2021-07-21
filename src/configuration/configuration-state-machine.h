@@ -13,10 +13,12 @@ class ConfigurationStateMachine {
         int footswitchNo;
         byte value;
         boolean longClick;
+        boolean enterConfiguration;
+        boolean printInfo;
 
     public:
         void reset();
-        void next();
+        ConfigurationState next();
         
         ConfigurationState getState();
         
@@ -30,6 +32,12 @@ class ConfigurationStateMachine {
 
         ControllerButtonEntity getControllerButton();
         CommandType getCommandType();
+
+        boolean shouldEnterConfiguration();
+        void setShouldEnterConfiguration(boolean state);
+
+        boolean shouldPrintInfo();
+        void setShouldPrintInfo(boolean state);
 };
 
 #endif

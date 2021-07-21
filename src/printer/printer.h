@@ -12,18 +12,19 @@ class Printer {
     private:
         String valueToCommandTypeLabel(byte value);
         LiquidCrystal_I2C lcd;
+        MidiControllerConfig *config;
 
     public:
-        Printer();
+        Printer(MidiControllerConfig *config);
         void init();
         void welcome(String revision);
         void enterConfiguration();
         void leaveConfiguration();
         void selectFootswitchPrompt();
-        void configurationPrompt(ConfigurationState state, byte value, CommandType commandType = CommandType::UNSET);
-        void commandInfo(int footswitchNo, int page, ControllerButtonEntity btn, byte lastValue);
+        void configurationPrompt(ConfigurationState state, byte value, CommandType commandType);
+        void commandInfo(int footswitchNo, boolean longClick, byte lastValue);
         void printConfigPage(MidiControllerConfig *config);
-        void debug(String value);
+        void changeModeMessage(boolean inConfigurationMode);
 };
 
 #endif

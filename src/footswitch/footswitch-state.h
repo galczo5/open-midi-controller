@@ -6,7 +6,7 @@ enum FootswitchState {
 	PRESSED = 1,
 	CLICK = 2,
 	LONG_CLICK = 4,
-	ANY = CLICK | LONG_CLICK
+	ANY_CLICK = CLICK | LONG_CLICK
 };
 
 #endif

@@ -7,7 +7,8 @@
 
 #define MESSAGE_TIMEOUT 1500
 
-Printer::Printer() : lcd(0x27, 20, 4) {
+Printer::Printer(MidiControllerConfig *config) : lcd(0x27, 20, 4) {
+    this->config = config;
 }
 
 void Printer::init() {
@@ -36,6 +37,8 @@ void Printer::enterConfiguration() {
     this->lcd.print("CONFIGURATION");
     delay(MESSAGE_TIMEOUT);
     this->lcd.clear();
+
+    this->selectFootswitchPrompt();
 }
 
 void Printer::leaveConfiguration() {
@@ -56,7 +59,7 @@ void Printer::selectFootswitchPrompt() {
     this->lcd.print("FOOTSWITCH");
 }
 
-void Printer::configurationPrompt(ConfigurationState state, byte value, CommandType commandType = CommandType::UNSET) {
+void Printer::configurationPrompt(ConfigurationState state, byte value, CommandType commandType) {
     String line1;
     String line2;
 
@@ -121,7 +124,11 @@ String Printer::valueToCommandTypeLabel(byte value) {
 
 }
 
-void Printer::commandInfo(int footswitchNo, int page, ControllerButtonEntity btn, byte lastValue) {
+void Printer::commandInfo(int footswitchNo, boolean longClick, byte lastValue) {
+
+    ControllerButtonEntity btn = this->config->getButtonData(footswitchNo, longClick);
+    int page = this->config->getPage();
+
     this->lcd.clear();
     this->lcd.setCursor(0, 0);
     this->lcd.print("FS " + String(footswitchNo + 1));
@@ -177,8 +184,7 @@ void Printer::printConfigPage(MidiControllerConfig *config) {
 
     for (int i = 0; i < BUTTON_NO; i++) {
         this->lcd.clear();
-        ControllerButtonEntity btn = config->getButtonData(i, false);
-        this->commandInfo(i, config->getPage(), btn, 0);
+        this->commandInfo(i, false, 0);
         delay(MESSAGE_TIMEOUT);
     }
 
@@ -191,18 +197,17 @@ void Printer::printConfigPage(MidiControllerConfig *config) {
 
     for (int i = 0; i < BUTTON_NO; i++) {
         this->lcd.clear();
-        ControllerButtonEntity btn = config->getButtonData(i, true);
-        this->commandInfo(i, config->getPage(), btn, 0);
+        this->commandInfo(i, true, 0);
         delay(MESSAGE_TIMEOUT);
     }
 
     this->lcd.clear();
 }
 
-void Printer::debug(String value) {
-    this->lcd.clear();
-    this->lcd.setCursor(0, 0);
-    this->lcd.print("DEBUG");
-    this->lcd.setCursor(0, 1);
-    this->lcd.print(value);
+void Printer::changeModeMessage(boolean inConfigurationMode) {
+    if (inConfigurationMode) {
+      this->enterConfiguration();
+    } else {
+      this->leaveConfiguration();
+    }  
 }

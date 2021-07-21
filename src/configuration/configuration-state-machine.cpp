@@ -22,7 +22,7 @@ void ConfigurationStateMachine::reset() {
     this->configBytes[VALUE3] = 0;
 }
 
-void ConfigurationStateMachine::next() {
+ConfigurationState ConfigurationStateMachine::next() {
     this->configBytes[this->state] = this->value;
     this->value = 0;
 
@@ -41,6 +41,8 @@ void ConfigurationStateMachine::next() {
     } else {
         this->state = static_cast<ConfigurationState>(this->state + 1);
     }
+
+    return this->state;
 }
 
 ConfigurationState ConfigurationStateMachine::getState() {
@@ -78,7 +80,6 @@ void ConfigurationStateMachine::decrementValue() {
     this->value = newValue % numberOfValues;
 }
 
-
 byte ConfigurationStateMachine::getValue() {
     return this->value;
 }
@@ -108,7 +109,22 @@ boolean ConfigurationStateMachine::isLongClick() {
     return this->longClick;
 }
 
-
 CommandType ConfigurationStateMachine::getCommandType() {
     return static_cast<CommandType>(this->configBytes[TYPE]);
+}
+
+boolean ConfigurationStateMachine::shouldEnterConfiguration() {
+    return this->enterConfiguration;
+}
+
+void ConfigurationStateMachine::setShouldEnterConfiguration(boolean state) {
+    this->enterConfiguration = state;
+}
+
+boolean ConfigurationStateMachine::shouldPrintInfo() {
+    return this->printInfo;
+}
+
+void ConfigurationStateMachine::setShouldPrintInfo(boolean state) {
+    this->printInfo = state;
 }

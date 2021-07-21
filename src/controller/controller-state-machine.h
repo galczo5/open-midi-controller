@@ -11,7 +11,7 @@ class ControllerStateMachine {
     public:
         ControllerState state;
         ControllerStateMachine(ControllerState initState);
-        boolean inState(ControllerState state);
+        ControllerState getState();
         void enterState(ControllerState state);
         void toggleState();
         boolean checkChanges();

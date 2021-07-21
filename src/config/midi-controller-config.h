@@ -20,7 +20,7 @@ private:
   const int MAX_PAGES = 5;
 
   byte storedData[BUFFER_SIZE];
-  int page = 0;
+  int page;
 
 public:
   MidiControllerConfig();
@@ -30,7 +30,6 @@ public:
   
   ControllerButtonEntity getButtonData(int no, boolean longClick);
   void setButton(int no, ControllerButtonEntity button, boolean longClick);
-
 };
 
 #endif

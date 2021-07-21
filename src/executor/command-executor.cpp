@@ -2,11 +2,13 @@
 #include <MIDI.h>
 #include "executor/command-executor.h"
 #include "config/command-type.h"
+#include "consts.h"
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-CommandExecutor::CommandExecutor(MidiControllerConfig* config) {
+CommandExecutor::CommandExecutor(MidiControllerConfig* config, Printer *printer) {
     this->config = config;
+    this->printer = printer;
     this->toggleIterator = 0;
 }
 
@@ -50,9 +52,7 @@ void CommandExecutor::saveToggleHistory(int no, int page, byte value) {
 }
 
 void CommandExecutor::executeCommand(int no, boolean longClick) {
-
     ControllerButtonEntity entity = this->config->getButtonData(no, longClick);
-
     int page = this->config->getPage();
 
     switch (entity.type) {
@@ -95,11 +95,25 @@ void CommandExecutor::executeCommand(int no, boolean longClick) {
             this->config->setPage(entity.value1);
             break;
         }
-    
     }
-
 }
 
 byte CommandExecutor::getExecutedValue() {
     return this->lastValue;
+}
+
+void CommandExecutor::sendCommands(Footswitch* footswitches[]) {
+    for (int i = 0; i < NUMBER_OF_FOOTSWITCHES; i++) {
+        FootswitchState state = footswitches[i]->checkClicked();
+
+        if (state & FootswitchState::ANY_CLICK) {
+            int no = footswitches[i]->getNumber();
+            boolean longClick = state == FootswitchState::LONG_CLICK;
+            
+            this->executeCommand(no, longClick);
+            this->printer->commandInfo(no, longClick, this->getExecutedValue());
+
+            return;
+        }
+    }
 }
