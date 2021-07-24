@@ -10,6 +10,7 @@ Most important features:
 * Configurable without computer connection
 * Supported midi commands: Note, CC - send one value, CC - toggle two values
 * Five "pages" of configuration. You can assign action to footswitch and toggle between five different configurations
+* Working with USB MIDI using serial port. You'll need to use additional software like [Hairless Midi](https://projectgus.github.io/hairless-midiserial/), [ttymidi](https://github.com/cjbarnes18/ttymidi) or [SerialMidiBridge](https://github.com/RuudMulder/SerialMidiBridge) to control your DAW or plugins. Just set port and baudrate of 115200 and it should work.
 
 It's easy to calculate that with 6 footswitches, 2 actions for each footswitch and 5 possible configuration pages allows you to assing 60 different commands! Thats a lot.
 

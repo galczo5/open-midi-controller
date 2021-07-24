@@ -14,6 +14,7 @@ CommandExecutor::CommandExecutor(MidiControllerConfig* config, Printer *printer)
 
 void CommandExecutor::init() {
     MIDI.begin();
+    Serial.begin(115200);
 }
 
 int CommandExecutor::getLastValue(int no, int page) {
