@@ -20,7 +20,7 @@ Cost of parts if you decide to order them in popular Chinese store.
 | ---- | ---- |
 | Arduino Nano | 2 - 3 USD |
 | Arduino Nano Shield (if you don't want to solder) | 1 USD |
-| LCD with IC2 module | 2 - 2.5 USD |
+| LCD with I2C module | 2 - 2.5 USD |
 | Momentary Footswitches | 6 x 1 - 1.5 USD |
 | DIN 5 and other stuff | 1 USD |
 | TOTAL | 12 - 16.5 USD  |

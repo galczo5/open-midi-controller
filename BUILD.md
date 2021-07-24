@@ -12,7 +12,7 @@ This repo contains PlatformIO project with firmware for your controller. Please 
 
 ## LCD
 
-Connect lcd with provided instruction. IC2 should have 4 pins. Connect GND to GND pin, VCC to 5V pin.
+Connect lcd with provided instruction. I2C should have 4 pins. Connect GND to GND pin, VCC to 5V pin.
 
 If you are using the arduino nano board, SDA should be connected to A4 pin, SCL to A5 pin.
 
