@@ -14,6 +14,10 @@ Most important features:
 
 It's easy to calculate that with 6 footswitches, 2 actions for each footswitch and 5 possible configuration pages allows you to assing 60 different commands! Thats a lot.
 
+Features comming soon:
+* Double click support
+* Momentary page change
+
 # Build cost
 Cost of parts if you decide to order them in popular Chinese store.
 
@@ -26,7 +30,20 @@ Cost of parts if you decide to order them in popular Chinese store.
 | DIN 5 and other stuff | 1 USD |
 | TOTAL | 12 - 16.5 USD  |
 
-*You have to add the cost of the case and soldering supplies. I'm using a case described as T25. It costs about 8 USD. You can make the case of course of almost anything.*
+*You have to add the cost of the case and soldering supplies. I'm using a case described as T25. It costs about 8 USD. You can make the case of almost anything.*
+
+# Branches
+
+The idea is to keep in the main branch only the code that don't need any hardware changes. So once you build your own device, you won't need to change it. Adding mods to hardware is possible using other branches. 
+
+So features like:
+* 10 switches
+* additional jack outputs for expression pedals
+* led status diodes
+
+are possible and can be implemented, but they will never be part of the main branch. 
+
+I want to keep the device easy and cheap to build but still highly moddable.
 
 # Build instruction
 
@@ -48,9 +65,13 @@ See [MANUAL](./MANUAL.md).
 
 Leave me an issue on github. It's highly possible that I will implement it.
 
+# Changelog
+
+See [CHANGELOG](./CHANGELOG.md).
+
 # Build photos
 
-Send me your build photos, I will post it here :)
+Send me your build photos. I will post it here :)
 
 My build:
 
