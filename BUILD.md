@@ -2,6 +2,8 @@
 
 This repo contains PlatformIO project with firmware for your controller. Please follow [official guide](https://docs.platformio.org/en/latest/core/quickstart.html) and upload code into your arduino nano board.
 
+See [UPLOADING](./UPLOADING.md).
+
 ## Wiring
 
 ![wiring](./photos/wiring.png)
