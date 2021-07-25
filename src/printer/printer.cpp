@@ -211,3 +211,22 @@ void Printer::changeModeMessage(boolean inConfigurationMode) {
       this->leaveConfiguration();
     }  
 }
+
+void Printer::usbMode(boolean enabled) {
+    if (enabled) {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("USB MODE");
+        lcd.setCursor(0, 1);
+        lcd.print("ENABLED");
+    } else {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("MIDI MODE");
+        lcd.setCursor(0, 1);
+        lcd.print("ENABLED");
+    }
+
+    delay(MESSAGE_TIMEOUT);
+    lcd.clear();
+}

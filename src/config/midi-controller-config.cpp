@@ -52,3 +52,12 @@ void MidiControllerConfig::setPage(int page) {
     this->page = PAGE_NO - 1;
   }
 }
+
+
+boolean MidiControllerConfig::isInUsbMidiMode() {
+  return EEPROM.read(USB_MODE_EEPROM_ADDR);
+}
+
+void MidiControllerConfig::setUsbMidiMode(boolean enabled) {
+  EEPROM.write(USB_MODE_EEPROM_ADDR, enabled ? 1 : 0);
+}

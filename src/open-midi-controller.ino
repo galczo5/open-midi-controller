@@ -1,4 +1,4 @@
-#define REVISION "20210724"
+#define REVISION "20210725"
 
 #include <MIDI.h>
 
@@ -40,12 +40,21 @@ ConfigurationStateMachine configurationStateMachine;
 Printer printer(&config);
 CommandExecutor commandExecutor(&config, &printer);
 Configurator configurator(&config, &configurationStateMachine, &printer);
+boolean usbModeButtonsPressed = false;
+void(* resetFunc) (void) = 0;
 
 void setup() {
     commandExecutor.init();
 
     printer.init();
     printer.welcome(REVISION);
+
+    boolean usbMode = config.isInUsbMidiMode();
+    if (usbMode) {
+        Serial.begin(115200);
+    }
+
+    printer.usbMode(usbMode);
 
     for (Footswitch* fs : footswitches) { 
         fs->init(); 
@@ -58,7 +67,7 @@ void loop() {
         fs->scan();
     }
     
-    if (infoSwitchesPressed() || configSwitchesPressed()) {
+    if (infoSwitchesPressed() || configSwitchesPressed() || usbModeSwitchesPressed()) {
         return;
     }
 
@@ -81,6 +90,24 @@ void loop() {
     }
 
 }
+
+boolean usbModeSwitchesPressed() {
+    FootswitchState fs1State = footswitches[FS_USB_MIDI_1]->checkClicked();
+    FootswitchState fs2State = footswitches[FS_USB_MIDI_2]->checkClicked();
+
+    if (fs1State == FootswitchState::PRESSED && fs2State == FootswitchState::PRESSED) {
+        usbModeButtonsPressed = true;
+    }
+
+    if (fs1State == FootswitchState::NONE && usbModeButtonsPressed) {
+        config.setUsbMidiMode(!config.isInUsbMidiMode());
+        resetFunc();
+        return true;
+    }
+
+    return false;
+}
+
 
 boolean infoSwitchesPressed() {
     FootswitchState fs1State = footswitches[FS_INFO_1]->checkClicked();

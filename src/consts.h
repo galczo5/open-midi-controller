@@ -16,3 +16,6 @@
 
 #define FS_INFO_1 0
 #define FS_INFO_2 2
+
+#define FS_USB_MIDI_1 3
+#define FS_USB_MIDI_2 5

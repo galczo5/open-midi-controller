@@ -25,6 +25,7 @@ class Printer {
         void commandInfo(int footswitchNo, boolean longClick, byte lastValue);
         void printConfigPage(MidiControllerConfig *config);
         void changeModeMessage(boolean inConfigurationMode);
+        void usbMode(boolean enabled);
 };
 
 #endif

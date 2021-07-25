@@ -39,3 +39,6 @@ Press both FS2 and FS4 footswitches. LCD should display information that you are
 ## Display current configuration
 
 Press both FS1 and FS3 footswitches.
+
+## USB MIDI mode
+To enter USB MIDI mode push both FS4 and FS6. Device should restart in USB MIDI mode. To go back to MIDI mode push both FS4 and FS6.

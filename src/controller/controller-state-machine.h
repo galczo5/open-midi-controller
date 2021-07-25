@@ -7,6 +7,7 @@
 class ControllerStateMachine {
     private:
         boolean stateChanged;
+        boolean usbMode;
 
     public:
         ControllerState state;

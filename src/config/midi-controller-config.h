@@ -7,12 +7,13 @@
 
 #define BUTTON_NO 6
 #define PAGE_NO 5
-#define BUFFER_SIZE 300
 #define LONG_CLICK_BUFFER_START 150
 #define PAGE_SIZE 48
 #define BUTTON_SIZE 5
+#define ACTIONS_NO 2
+#define BUFFER_SIZE BUTTON_NO * BUTTON_SIZE * ACTIONS_NO * PAGE_NO
 
-// 6 buttons x 2 actions x 5 pages * 5 bytes = 300
+#define USB_MODE_EEPROM_ADDR 800
 
 class MidiControllerConfig {
 
@@ -30,6 +31,10 @@ public:
   
   ControllerButtonEntity getButtonData(int no, boolean longClick);
   void setButton(int no, ControllerButtonEntity button, boolean longClick);
+  
+
+  bool isInUsbMidiMode();
+  void setUsbMidiMode(boolean enabled);
 };
 
 #endif
