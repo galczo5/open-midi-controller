@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "controller-button-entity.h"
+#include "footswitch/footswitch-state.h"
 #include "command-type.h"
 
 #define BUTTON_NO 6
@@ -29,8 +30,8 @@ public:
   int getPage();
   void setPage(int page);
   
-  ControllerButtonEntity getButtonData(int no, boolean longClick);
-  void setButton(int no, ControllerButtonEntity button, boolean longClick);
+  ControllerButtonEntity getButtonData(int no, FootswitchState click);
+  void setButton(int no, ControllerButtonEntity button, FootswitchState click);
   
 
   bool isInUsbMidiMode();

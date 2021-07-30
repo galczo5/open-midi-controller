@@ -84,9 +84,9 @@ byte ConfigurationStateMachine::getValue() {
     return this->value;
 }
 
-void ConfigurationStateMachine::setFootswitch(int no, boolean longClick) {
+void ConfigurationStateMachine::setFootswitch(int no, FootswitchState click) {
     this->footswitchNo = no;
-    this->longClick = longClick;
+    this->click = click;
 }
 
 int ConfigurationStateMachine::getFootswitch() {
@@ -105,8 +105,8 @@ ControllerButtonEntity ConfigurationStateMachine::getControllerButton() {
     return button;
 }
 
-boolean ConfigurationStateMachine::isLongClick() {
-    return this->longClick;
+FootswitchState ConfigurationStateMachine::getFootswitchState() {
+    return this->click;
 }
 
 CommandType ConfigurationStateMachine::getCommandType() {

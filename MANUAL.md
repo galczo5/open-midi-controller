@@ -1,6 +1,6 @@
 # Manual
 
-This document contains how to use and configure controller.
+This document contains how to use and configure the controller.
 
 ## Footswitch map
 
@@ -12,9 +12,9 @@ Press both FS2 and FS4 footswitches. LCD should display information that you are
 
 ## Configuration
 
-First of all, you have to select footswitch that you want to configure. Press footswitch you want to configure. If you want to configure long press, you should press it for more than 1 second.
+First of all, you have to select the footswitch that you want to configure. Press the footswitch you want to configure. If you want to configure the long press, you should press it for more than 1 second. If you want to configure the double click, you should press it twice in short period of time.
 
-Next you have to set MIDI channel.
+Next, you have to set MIDI channel.
 
 **Use FS1 and FS2 to change value**
 
@@ -41,4 +41,4 @@ Press both FS2 and FS4 footswitches. LCD should display information that you are
 Press both FS1 and FS3 footswitches.
 
 ## USB MIDI mode
-To enter USB MIDI mode push both FS4 and FS6. Device should restart in USB MIDI mode. To go back to MIDI mode push both FS4 and FS6.
+To enter USB MIDI mode, push both FS4 and FS6. The device should restart in USB MIDI mode. To go back to MIDI mode, push both FS4 and FS6.

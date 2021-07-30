@@ -3,6 +3,7 @@
 
 #include "configuration/configuration-state.h"
 #include "config/command-type.h"
+#include "footswitch/footswitch-state.h"
 #include "printer.h"
 
 #define MESSAGE_TIMEOUT 1500
@@ -124,9 +125,9 @@ String Printer::valueToCommandTypeLabel(byte value) {
 
 }
 
-void Printer::commandInfo(int footswitchNo, boolean longClick, byte lastValue) {
+void Printer::commandInfo(int footswitchNo, FootswitchState click, byte lastValue) {
 
-    ControllerButtonEntity btn = this->config->getButtonData(footswitchNo, longClick);
+    ControllerButtonEntity btn = this->config->getButtonData(footswitchNo, click);
     int page = this->config->getPage();
 
     this->lcd.clear();
@@ -184,7 +185,7 @@ void Printer::printConfigPage(MidiControllerConfig *config) {
 
     for (int i = 0; i < BUTTON_NO; i++) {
         this->lcd.clear();
-        this->commandInfo(i, false, 0);
+        this->commandInfo(i, FootswitchState::CLICK, 0);
         delay(MESSAGE_TIMEOUT);
     }
 
@@ -197,7 +198,20 @@ void Printer::printConfigPage(MidiControllerConfig *config) {
 
     for (int i = 0; i < BUTTON_NO; i++) {
         this->lcd.clear();
-        this->commandInfo(i, true, 0);
+        this->commandInfo(i, FootswitchState::LONG_CLICK, 0);
+        delay(MESSAGE_TIMEOUT);
+    }
+
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("DOUBLE CLICK");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print("CONFIGURATION");
+    delay(MESSAGE_TIMEOUT);
+
+    for (int i = 0; i < BUTTON_NO; i++) {
+        this->lcd.clear();
+        this->commandInfo(i, FootswitchState::DOUBLE_CLICK, 0);
         delay(MESSAGE_TIMEOUT);
     }
 
@@ -229,4 +243,12 @@ void Printer::usbMode(boolean enabled) {
 
     delay(MESSAGE_TIMEOUT);
     lcd.clear();
+}
+
+void Printer::debug(String txt) {
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print(txt);
+    delay(500);
+    this->lcd.clear();
 }

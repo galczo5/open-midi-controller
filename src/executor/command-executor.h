@@ -6,6 +6,7 @@
 #include "config/controller-button-entity.h"
 #include "config/midi-controller-config.h"
 #include "footswitch/footswitch.h"
+#include "footswitch/footswitch-state.h"
 #include "printer/printer.h"
 
 #define TOGGLE_HISTORY_SIZE 20
@@ -27,7 +28,7 @@ class CommandExecutor {
     public:
         CommandExecutor(MidiControllerConfig* config, Printer *printer);
         void init();
-        void executeCommand(int no, boolean longClick);
+        void executeCommand(int no, FootswitchState click);
         void sendCommands(Footswitch* footswitches[]);
         byte getExecutedValue();
 };

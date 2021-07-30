@@ -17,8 +17,8 @@ void Configurator::configure(Footswitch* footswitches[]) {
     if (configurationState == ConfigurationState::SELECT_FOOTSWITCH) {
         for (int i = 0; i < NUMBER_OF_FOOTSWITCHES; i++) {
             FootswitchState click = footswitches[i]->checkClicked();
-            if (click == FootswitchState::CLICK || click == FootswitchState::LONG_CLICK) {
-                this->configurationStateMachine->setFootswitch(footswitches[i]->getNumber(), click == FootswitchState::LONG_CLICK);
+            if (click & FootswitchState::ANY_CLICK) {
+                this->configurationStateMachine->setFootswitch(footswitches[i]->getNumber(), click);
                 this->configurationStateMachine->next();
 
                 this->printer->configurationPrompt(
@@ -63,7 +63,7 @@ void Configurator::configure(Footswitch* footswitches[]) {
             this->config->setButton(
                 this->configurationStateMachine->getFootswitch(), 
                 this->configurationStateMachine->getControllerButton(),
-                this->configurationStateMachine->isLongClick()
+                this->configurationStateMachine->getFootswitchState()
             );
 
             this->configurationStateMachine->reset();

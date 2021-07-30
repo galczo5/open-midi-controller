@@ -1,25 +1,24 @@
 # Open Midi Controller
-Open source firmware for 6 button midi controller based on arduino. It's fully configurable and don't need computer connection. Build you own midi controller and save a lot of money. 
+Open source firmware for 6 button midi controller based on arduino. It's fully configurable and doesn't need a computer connection. Build your own midi controller and save a lot of money. 
 
 # Features
 
 Most important features:
 
-* 6 buttons, each can be assigned to two actions. First action is triggered on footswitch click, second one is triggered when switch is pressed for more than 1 second.
+* 6 buttons, each can be assigned to three actions. The first action is triggered on footswitch click. The second one is triggered when the switch is pressed for more than 1 second. The last one is triggered on double click.
 * LCD status screen
-* Configurable without computer connection
+* Configurable without a computer connection
 * Supported midi commands: Note, CC - send one value, CC - toggle two values
-* Five "pages" of configuration. You can assign action to footswitch and toggle between five different configurations
-* Working with USB MIDI using serial port. You'll need to use additional software like [Hairless Midi](https://projectgus.github.io/hairless-midiserial/), [ttymidi](https://github.com/cjbarnes18/ttymidi) or [SerialMidiBridge](https://github.com/RuudMulder/SerialMidiBridge) to control your DAW or plugins. Just set port and baudrate of 115200 and it should work.
+* Five "pages" of configuration. You can assign an action to footswitch and toggle between five different configurations
+* Working with USB MIDI using the serial port. You'll need to use additional software like [Hairless Midi](https://projectgus.github.io/hairless-midiserial/), [ttymidi](https://github.com/cjbarnes18/ttymidi) or [SerialMidiBridge](https://github.com/RuudMulder/SerialMidiBridge) to control your DAW or plugins. Just set port and baudrate of 115200.
 
-It's easy to calculate that with 6 footswitches, 2 actions for each footswitch and 5 possible configuration pages allows you to assing 60 different commands! Thats a lot.
+It's easy to calculate that with 6 footswitches, 2 actions for each footswitch and 5 possible configuration pages allow you to configure 60 different commands! That's a lot.
 
-Features comming soon:
-* Double click support
+Planned features:
 * Momentary page change
 
 # Build cost
-Cost of parts if you decide to order them in popular Chinese store.
+Cost of parts if you decide to order them in the popular Chinese store.
 
 | Part | Cost |
 | ---- | ---- |
