@@ -12,10 +12,7 @@ Most important features:
 * Five "pages" of configuration. You can assign an action to footswitch and toggle between five different configurations
 * Working with USB MIDI using the serial port. You'll need to use additional software like [Hairless Midi](https://projectgus.github.io/hairless-midiserial/), [ttymidi](https://github.com/cjbarnes18/ttymidi) or [SerialMidiBridge](https://github.com/RuudMulder/SerialMidiBridge) to control your DAW or plugins. Just set port and baudrate of 115200.
 
-It's easy to calculate that with 6 footswitches, 2 actions for each footswitch and 5 possible configuration pages allow you to configure 60 different commands! That's a lot.
-
-Planned features:
-* Momentary page change
+It's easy to calculate that with 6 footswitches, 3 actions for each footswitch and 3 possible configuration pages allow you to configure 54 different commands! That's a lot.
 
 # Build cost
 Cost of parts if you decide to order them in the popular Chinese store.

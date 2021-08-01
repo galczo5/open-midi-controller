@@ -29,6 +29,7 @@ Available commands:
 * Next page - go to next configuration page
 * Prev page - go to the previous configuration page
 * Go to page - go to the selected page
+* Temporary page - go to page and go back after next command
 
 Pass the rest of the configuration using FS1, FS2 and FS4.
 
