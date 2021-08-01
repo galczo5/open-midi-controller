@@ -18,6 +18,7 @@ void Configurator::configure(Footswitch* footswitches[]) {
         for (int i = 0; i < NUMBER_OF_FOOTSWITCHES; i++) {
             FootswitchState click = footswitches[i]->checkClicked();
             if (click & FootswitchState::ANY_CLICK) {
+                this->printer->clickType(click);
                 this->configurationStateMachine->setFootswitch(footswitches[i]->getNumber(), click);
                 this->configurationStateMachine->next();
 
@@ -44,19 +45,19 @@ void Configurator::configure(Footswitch* footswitches[]) {
     FootswitchState fsDecrementState = footswitches[FS_CONFIG_DECREMENT]->checkClicked();
     FootswitchState fsNextState = footswitches[FS_CONFIG_NEXT]->checkClicked();
     
-    if (fsIncrementState == FootswitchState::CLICK) {
+    if (fsIncrementState & FootswitchState::ANY_CLICK) {
         this->configurationStateMachine->incrementValue();
         byte value = this->configurationStateMachine->getValue();
         this->printer->configurationPrompt(state, value, commandType);
 
-    } else if (fsDecrementState == FootswitchState::CLICK) {
+    } else if (fsDecrementState & FootswitchState::ANY_CLICK) {
         this->configurationStateMachine->decrementValue();
         byte value = this->configurationStateMachine->getValue();
         this->printer->configurationPrompt(state, value, commandType);
 
     } 
     
-    if (fsNextState == FootswitchState::CLICK) {
+    if (fsNextState & FootswitchState::ANY_CLICK) {
         ConfigurationState newState = this->configurationStateMachine->next();
 
         if (newState == ConfigurationState::EXIT) {

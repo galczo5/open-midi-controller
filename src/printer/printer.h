@@ -27,6 +27,7 @@ class Printer {
         void changeModeMessage(boolean inConfigurationMode);
         void usbMode(boolean enabled);
         void debug(String txt);
+        void clickType(FootswitchState click);
 };
 
 #endif

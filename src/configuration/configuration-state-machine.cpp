@@ -2,6 +2,7 @@
 #include "configuration-state.h"
 #include "config/command-type.h"
 #include "config/controller-button-entity.h"
+#include "consts.h"
 
 #define CHANNEL 0
 #define TYPE 1
@@ -38,6 +39,8 @@ ConfigurationState ConfigurationStateMachine::next() {
         this->state = ConfigurationState::EXIT;
     } else if (this->state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::PAGE) {
         this->state = ConfigurationState::EXIT;
+    } else if (this->state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::TEMP_PAGE) {
+        this->state = ConfigurationState::EXIT;
     } else {
         this->state = static_cast<ConfigurationState>(this->state + 1);
     }
@@ -51,12 +54,12 @@ ConfigurationState ConfigurationStateMachine::getState() {
 
 void ConfigurationStateMachine::incrementValue() {
 
-    int numberOfValues = 128;
+    int numberOfValues = MIDI_MAX_VALUE;
 
     if (this->state == ConfigurationState::SELECT_TYPE) {
-        numberOfValues = 7;
-    } else if (this->state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::PAGE) {
-        numberOfValues = 5;
+        numberOfValues = NUMBER_OF_COMMAND_TYPES;
+    } else if (this->state == ConfigurationState::SELECT_VALUE1 && (this->configBytes[TYPE] == CommandType::PAGE || this->configBytes[TYPE] == CommandType::TEMP_PAGE)) {
+        numberOfValues = NUMBER_OF_PAGES;
     }
 
     this->value = (this->value + 1) % numberOfValues;
@@ -64,12 +67,12 @@ void ConfigurationStateMachine::incrementValue() {
 
 void ConfigurationStateMachine::decrementValue() {
 
-    int numberOfValues = 128;
+    int numberOfValues = MIDI_MAX_VALUE;
 
     if (this->state == ConfigurationState::SELECT_TYPE) {
-        numberOfValues = 7;
-    } else if (this->state == ConfigurationState::SELECT_VALUE1 && this->configBytes[TYPE] == CommandType::PAGE) {
-        numberOfValues = 5;
+        numberOfValues = NUMBER_OF_COMMAND_TYPES;
+    } else if (this->state == ConfigurationState::SELECT_VALUE1 && (this->configBytes[TYPE] == CommandType::PAGE || this->configBytes[TYPE] == CommandType::TEMP_PAGE)) {
+        numberOfValues = NUMBER_OF_PAGES;
     }
 
     int newValue = this->value - 1;

@@ -72,17 +72,20 @@ void Printer::configurationPrompt(ConfigurationState state, byte value, CommandT
         line2 = this->valueToCommandTypeLabel(value);
     } else if (state == ConfigurationState::SELECT_VALUE1) {
 
+        int offset = 0;
+
         if (commandType == CommandType::CC || commandType == CommandType::TOGGLE_CC) {
             line1 = "CC";
         } else if (commandType == CommandType::NOTE) {
             line1 = "NOTE";
-        } else if (commandType == CommandType::PAGE) {
+        } else if (commandType == CommandType::PAGE || commandType == CommandType::TEMP_PAGE) {
             line1 = "PAGE";
+            offset = 1;
         } else {
             line1 = "VALUE";
         }
 
-        line2 = String(value);
+        line2 = String(value + offset);
     } else if (state == ConfigurationState::SELECT_VALUE2) {
         line1 = "VALUE";
         line2 = String(value);
@@ -102,27 +105,43 @@ void Printer::configurationPrompt(ConfigurationState state, byte value, CommandT
 }
 
 String Printer::valueToCommandTypeLabel(byte value) {
-
     switch (value) {
-    case CommandType::UNSET:
-        return "EMPTY";
-    case CommandType::NOTE:
-        return "NOTE";
-    case CommandType::CC:
-        return "CC";
-    case CommandType::TOGGLE_CC:
-        return "TOGGLE CC";
-    case CommandType::NEXT_PAGE:
-        return "NEXT PAGE";
-    case CommandType::PREV_PAGE:
-        return "PREV PAGE";
-    case CommandType::PAGE:
-        return "GO TO PAGE";
-    
-    default:
-        return "ERROR: UNKNOWN";
+        case CommandType::UNSET:
+            return "EMPTY";
+        case CommandType::NOTE:
+            return "NOTE";
+        case CommandType::CC:
+            return "CC";
+        case CommandType::TOGGLE_CC:
+            return "TOGGLE CC";
+        case CommandType::NEXT_PAGE:
+            return "NEXT PAGE";
+        case CommandType::PREV_PAGE:
+            return "PREV PAGE";
+        case CommandType::PAGE:
+            return "GO TO PAGE";
+        case CommandType::TEMP_PAGE:
+            return "TEMP PAGE";
+        
+        default:
+            return "ERROR: UNKNOWN";
+    }
+}
+
+String footswitchStateToTwoLetters(FootswitchState click) {
+    if (click & FootswitchState::CLICK) {
+        return "";
     }
 
+    if (click & FootswitchState::LONG_CLICK) {
+        return "LONG ";
+    }
+
+    if (click & FootswitchState::DOUBLE_CLICK) {
+        return "DOUBLE ";
+    }
+
+    return "";
 }
 
 void Printer::commandInfo(int footswitchNo, FootswitchState click, byte lastValue) {
@@ -132,9 +151,9 @@ void Printer::commandInfo(int footswitchNo, FootswitchState click, byte lastValu
 
     this->lcd.clear();
     this->lcd.setCursor(0, 0);
-    this->lcd.print("FS " + String(footswitchNo + 1));
-    this->lcd.setCursor(10, 0);
-    this->lcd.print("PAGE " + String(page + 1));
+    this->lcd.print(footswitchStateToTwoLetters(click) + "FS " + String(footswitchNo + 1));
+    this->lcd.setCursor(14, 0);
+    this->lcd.print("P" + String(page + 1));
     this->lcd.setCursor(0, 1);
 
     if (btn.type == CommandType::CC) {
@@ -157,10 +176,16 @@ void Printer::commandInfo(int footswitchNo, FootswitchState click, byte lastValu
             value2 + " " + 
             value3
         );
-    } else if (btn.type == CommandType::PAGE || btn.type == CommandType::NEXT_PAGE || btn.type == CommandType::PREV_PAGE) {
+    } else if (
+        btn.type == CommandType::PAGE || 
+        btn.type == CommandType::NEXT_PAGE || 
+        btn.type == CommandType::PREV_PAGE || 
+        btn.type == CommandType::TEMP_PAGE) {
+
         this->lcd.print(
             this->valueToCommandTypeLabel(CommandType::PAGE) + " " + String(page + 1)
         );
+
     } else if (btn.type == CommandType::UNSET) {
         this->lcd.print(this->valueToCommandTypeLabel(CommandType::UNSET));
     } else if (btn.type == CommandType::NOTE) {
@@ -228,21 +253,21 @@ void Printer::changeModeMessage(boolean inConfigurationMode) {
 
 void Printer::usbMode(boolean enabled) {
     if (enabled) {
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("USB MODE");
-        lcd.setCursor(0, 1);
-        lcd.print("ENABLED");
+        this->lcd.clear();
+        this->lcd.setCursor(0, 0);
+        this->lcd.print("USB MODE");
+        this->lcd.setCursor(0, 1);
+        this->lcd.print("ENABLED");
     } else {
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("MIDI MODE");
-        lcd.setCursor(0, 1);
-        lcd.print("ENABLED");
+        this->lcd.clear();
+        this->lcd.setCursor(0, 0);
+        this->lcd.print("MIDI MODE");
+        this->lcd.setCursor(0, 1);
+        this->lcd.print("ENABLED");
     }
 
     delay(MESSAGE_TIMEOUT);
-    lcd.clear();
+    this->lcd.clear();
 }
 
 void Printer::debug(String txt) {
@@ -251,4 +276,25 @@ void Printer::debug(String txt) {
     this->lcd.print(txt);
     delay(500);
     this->lcd.clear();
+}
+
+void Printer::clickType(FootswitchState click) {
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+
+    if (click & FootswitchState::CLICK) {
+        this->lcd.print("CLICK");
+    }
+
+    if (click & FootswitchState::LONG_CLICK) {
+        this->lcd.print("LONG CLICK");
+    }
+
+    if (click & FootswitchState::DOUBLE_CLICK) {
+        this->lcd.print("DOUBLE CLICK");
+    }
+
+    delay(MESSAGE_TIMEOUT);
+    this->lcd.clear();
+    
 }

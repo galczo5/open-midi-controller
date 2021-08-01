@@ -3,8 +3,8 @@
 #include "footswitch-state.h"
 
 #define LONG_CLICK_TIME 1000
-#define CLICK_TIME 250
-#define DEBOUNCE_TIME 5
+#define CLICK_TIME 200
+#define DEBOUNCE_TIME 10
 #define TIME_TO_REPEAT 3000
 #define REPEAT_TIMEOUT 100
 
@@ -35,7 +35,7 @@ void Footswitch::scan() {
     unsigned long now = millis();
 
     // DEBOUNCE - DO NOT CHANGE STATE
-    if (state != this->lastState && now - this->lastStateChange < DEBOUNCE_TIME) {
+    if (state != this->lastState && now - this->lastStateChange < 50) {
         return;
     }
 

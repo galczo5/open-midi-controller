@@ -24,6 +24,7 @@ class CommandExecutor {
         String composeKey(int no, int page);
         void saveToggleHistory(int no, int page, byte value);
         byte lastValue;
+        int prevPage;
 
     public:
         CommandExecutor(MidiControllerConfig* config, Printer *printer);
@@ -31,6 +32,7 @@ class CommandExecutor {
         void executeCommand(int no, FootswitchState click);
         void sendCommands(Footswitch* footswitches[]);
         byte getExecutedValue();
+        int getPrevPage();
 };
 
 #endif

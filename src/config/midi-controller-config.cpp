@@ -39,9 +39,9 @@ ControllerButtonEntity MidiControllerConfig::getButtonData(int no, FootswitchSta
 void MidiControllerConfig::setButton(int no, ControllerButtonEntity button, FootswitchState click) {
   int mode = 0;
 
-  if (click & FootswitchState::LONG_CLICK) {
+  if (click == FootswitchState::LONG_CLICK) {
     mode = LONG_CLICK_BUFFER_START;
-  } else if (click & FootswitchState::DOUBLE_CLICK) {
+  } else if (click == FootswitchState::DOUBLE_CLICK) {
     mode = 2 * LONG_CLICK_BUFFER_START;
   }
   

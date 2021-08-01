@@ -1,4 +1,4 @@
-#define REVISION "20210730"
+#define REVISION "20210801"
 
 #include <MIDI.h>
 
@@ -140,5 +140,5 @@ boolean configSwitchesPressed() {
         return true;
     }
 
-    return false;
+    return configurationStateMachine.shouldEnterConfiguration();;
 }

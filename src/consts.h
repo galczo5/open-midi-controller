@@ -1,4 +1,6 @@
 #define NUMBER_OF_FOOTSWITCHES 6
+#define NUMBER_OF_PAGES 3
+#define MIDI_MAX_VALUE 128
 
 #define FS_1_PIN 2 
 #define FS_2_PIN 3
