@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include "midi-controller-config.h"
+#include "footswitch/footswitch-state.h"
 
 MidiControllerConfig::MidiControllerConfig() {
   this->page = 0;
@@ -13,8 +14,15 @@ int MidiControllerConfig::getPage() {
   return this->page;
 }
 
-ControllerButtonEntity MidiControllerConfig::getButtonData(int no, boolean longClick) {
-  int mode = longClick ? LONG_CLICK_BUFFER_START : 0;
+ControllerButtonEntity MidiControllerConfig::getButtonData(int no, FootswitchState click) {
+  int mode = 0;
+
+  if (click & FootswitchState::LONG_CLICK) {
+    mode = LONG_CLICK_BUFFER_START;
+  } else if (click & FootswitchState::DOUBLE_CLICK) {
+    mode = 2 * LONG_CLICK_BUFFER_START;
+  }
+
   int index = ((PAGE_SIZE * this->page) + (no * BUTTON_SIZE)) + mode;
 
   ControllerButtonEntity button = {
@@ -28,8 +36,15 @@ ControllerButtonEntity MidiControllerConfig::getButtonData(int no, boolean longC
   return button;
 }
 
-void MidiControllerConfig::setButton(int no, ControllerButtonEntity button, boolean longClick) {
-  int mode = longClick ? LONG_CLICK_BUFFER_START : 0;
+void MidiControllerConfig::setButton(int no, ControllerButtonEntity button, FootswitchState click) {
+  int mode = 0;
+
+  if (click == FootswitchState::LONG_CLICK) {
+    mode = LONG_CLICK_BUFFER_START;
+  } else if (click == FootswitchState::DOUBLE_CLICK) {
+    mode = 2 * LONG_CLICK_BUFFER_START;
+  }
+  
   int index = ((PAGE_SIZE * this->page) + (no * BUTTON_SIZE)) + mode;
   
   this->storedData[index] = button.channel;

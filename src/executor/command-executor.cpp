@@ -10,6 +10,7 @@ CommandExecutor::CommandExecutor(MidiControllerConfig* config, Printer *printer)
     this->config = config;
     this->printer = printer;
     this->toggleIterator = 0;
+    this->prevPage = -1;
 }
 
 void CommandExecutor::init() {
@@ -51,8 +52,8 @@ void CommandExecutor::saveToggleHistory(int no, int page, byte value) {
     this->toggleIterator = (this->toggleIterator + 1) % TOGGLE_HISTORY_SIZE;
 }
 
-void CommandExecutor::executeCommand(int no, boolean longClick) {
-    ControllerButtonEntity entity = this->config->getButtonData(no, longClick);
+void CommandExecutor::executeCommand(int no, FootswitchState click) {
+    ControllerButtonEntity entity = this->config->getButtonData(no, click);
     int page = this->config->getPage();
 
     switch (entity.type) {
@@ -95,6 +96,12 @@ void CommandExecutor::executeCommand(int no, boolean longClick) {
             this->config->setPage(entity.value1);
             break;
         }
+
+        case byte(CommandType::TEMP_PAGE): {
+            this->prevPage = this->config->getPage();
+            this->config->setPage(entity.value1);
+            break;
+        }
     }
 }
 
@@ -108,12 +115,23 @@ void CommandExecutor::sendCommands(Footswitch* footswitches[]) {
 
         if (state & FootswitchState::ANY_CLICK) {
             int no = footswitches[i]->getNumber();
-            boolean longClick = state == FootswitchState::LONG_CLICK;
+
+            int goBackToPage = this->getPrevPage();
             
-            this->executeCommand(no, longClick);
-            this->printer->commandInfo(no, longClick, this->getExecutedValue());
+            this->executeCommand(no, state);
+            this->printer->commandInfo(no, state, this->getExecutedValue());
+
+            if (goBackToPage >= 0) {
+                this->config->setPage(goBackToPage);
+            }
 
             return;
         }
     }
+}
+
+int CommandExecutor::getPrevPage() {
+    int result = this->prevPage;
+    this->prevPage = -1;
+    return result;
 }

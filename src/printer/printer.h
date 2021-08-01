@@ -22,10 +22,12 @@ class Printer {
         void leaveConfiguration();
         void selectFootswitchPrompt();
         void configurationPrompt(ConfigurationState state, byte value, CommandType commandType);
-        void commandInfo(int footswitchNo, boolean longClick, byte lastValue);
+        void commandInfo(int footswitchNo, FootswitchState click, byte lastValue);
         void printConfigPage(MidiControllerConfig *config);
         void changeModeMessage(boolean inConfigurationMode);
         void usbMode(boolean enabled);
+        void debug(String txt);
+        void clickType(FootswitchState click);
 };
 
 #endif

@@ -5,6 +5,7 @@
 #include "configuration-state.h"
 #include "config/controller-button-entity.h"
 #include "config/command-type.h"
+#include "footswitch/footswitch-state.h"
 
 class ConfigurationStateMachine {
     private:
@@ -12,7 +13,7 @@ class ConfigurationStateMachine {
         ConfigurationState state;
         int footswitchNo;
         byte value;
-        boolean longClick;
+        FootswitchState click;
         boolean enterConfiguration;
         boolean printInfo;
 
@@ -26,9 +27,9 @@ class ConfigurationStateMachine {
         void decrementValue();
         byte getValue();
 
-        void setFootswitch(int no, boolean longClick);
+        void setFootswitch(int no, FootswitchState click);
         int getFootswitch();
-        boolean isLongClick();
+        FootswitchState getFootswitchState();
 
         ControllerButtonEntity getControllerButton();
         CommandType getCommandType();

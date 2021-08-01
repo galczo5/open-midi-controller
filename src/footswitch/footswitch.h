@@ -8,9 +8,16 @@ class Footswitch {
 	private: 
 		int pin;
 		int no;
-		unsigned long timeClicked;
-		unsigned long timeRepeated;
-		boolean buttonDown;
+
+		int lastState;
+		boolean doubleClick;
+
+		unsigned long clickTime;
+		unsigned long repeatTime;
+
+		unsigned long lastStateChange;
+
+		boolean wasPressed;
 		FootswitchState click;
 		
 	public: 
