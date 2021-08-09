@@ -77,7 +77,7 @@ void Printer::configurationPrompt(ConfigurationState state, byte value, CommandT
         if (commandType == CommandType::CC || commandType == CommandType::TOGGLE_CC) {
             line1 = "CC";
         } else if (commandType == CommandType::NOTE) {
-            line1 = "NOTE";
+            line1 = "PG";
         } else if (commandType == CommandType::PAGE || commandType == CommandType::TEMP_PAGE) {
             line1 = "PAGE";
             offset = 1;
@@ -109,7 +109,7 @@ String Printer::valueToCommandTypeLabel(byte value) {
         case CommandType::UNSET:
             return "EMPTY";
         case CommandType::NOTE:
-            return "NOTE";
+            return "PG";
         case CommandType::CC:
             return "CC";
         case CommandType::TOGGLE_CC:

@@ -58,7 +58,7 @@ void CommandExecutor::executeCommand(int no, FootswitchState click) {
 
     switch (entity.type) {
         case byte(CommandType::NOTE): {
-            MIDI.sendNoteOn(entity.value1, 127, entity.channel);
+            MIDI.sendProgramChange(entity.value1, entity.channel); // after
             this->lastValue = 127;
             break;
         }
@@ -79,6 +79,7 @@ void CommandExecutor::executeCommand(int no, FootswitchState click) {
             MIDI.sendControlChange(entity.value1, valueToSend, entity.channel);
             this->saveToggleHistory(no, page, valueToSend);
             this->lastValue = valueToSend;
+            
             break;
         }
 
