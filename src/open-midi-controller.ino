@@ -63,6 +63,10 @@ void setup() {
 
 void loop() {
 
+    if (tryReadSerialPort()) {
+        return;
+    }
+
     for (Footswitch* fs : footswitches) {
         fs->scan();
     }
@@ -91,6 +95,43 @@ void loop() {
 
 }
 
+boolean tryReadSerialPort() {
+    boolean usbMode = config.isInUsbMidiMode();
+    if (usbMode && Serial.available() > 0) {
+        byte bytes[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        Serial.readBytes(bytes, 8);
+        
+        if (bytes[0] == 0) {
+            int page = bytes[1];
+            config.setPage(page);
+            printer.usbPageChanged(page);
+        } else if (bytes[0] == 1) {
+            ControllerButtonEntity button = { bytes[3], bytes[4], bytes[5], bytes[6], bytes[7] };
+
+            FootswitchState state;
+            int fsStateByte = bytes[2];
+
+            if (fsStateByte == 0) {
+                state = FootswitchState::NONE;
+            } else if (fsStateByte == 1) {
+                state = FootswitchState::CLICK;
+            } else if (fsStateByte == 2) {
+                state = FootswitchState::LONG_CLICK;
+            } else if (fsStateByte == 3) {
+                state = FootswitchState::DOUBLE_CLICK;
+            }
+
+            int fsNo = bytes[1];
+            config.setButton(fsNo, button, state);
+            printer.commandInfo(fsNo, state, 0);
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
 boolean usbModeSwitchesPressed() {
     FootswitchState fs1State = footswitches[FS_USB_MIDI_1]->checkClicked();
     FootswitchState fs2State = footswitches[FS_USB_MIDI_2]->checkClicked();
@@ -107,7 +148,6 @@ boolean usbModeSwitchesPressed() {
 
     return false;
 }
-
 
 boolean infoSwitchesPressed() {
     FootswitchState fs1State = footswitches[FS_INFO_1]->checkClicked();

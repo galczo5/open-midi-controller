@@ -296,5 +296,12 @@ void Printer::clickType(FootswitchState click) {
 
     delay(MESSAGE_TIMEOUT);
     this->lcd.clear();
+}
     
+void Printer::usbPageChanged(int page) {
+    this->lcd.clear();
+    this->lcd.setCursor(0, 0);
+    this->lcd.print("PAGE CHANGED");
+    this->lcd.setCursor(0, 1);
+    this->lcd.print("PAGE " + String(page));
 }

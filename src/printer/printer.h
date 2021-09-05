@@ -28,6 +28,7 @@ class Printer {
         void usbMode(boolean enabled);
         void debug(String txt);
         void clickType(FootswitchState click);
+        void usbPageChanged(int page);
 };
 
 #endif
