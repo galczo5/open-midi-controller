@@ -22,12 +22,8 @@ void Printer::welcome(String revision) {
     this->lcd.print("MIDI CONTROLLER");
     this->lcd.setCursor(0, 1);
     this->lcd.print("REV. " + revision);
-    delay(MESSAGE_TIMEOUT);
+    delay(500);
     this->lcd.clear();
-    this->lcd.setCursor(0, 0);
-    this->lcd.print("PRESS ANY");
-    this->lcd.setCursor(0, 1);
-    this->lcd.print("FOOTSWITCH");
 }
 
 void Printer::enterConfiguration() {
@@ -266,7 +262,7 @@ void Printer::usbMode(boolean enabled) {
         this->lcd.print("ENABLED");
     }
 
-    delay(MESSAGE_TIMEOUT);
+    delay(500);
     this->lcd.clear();
 }
 

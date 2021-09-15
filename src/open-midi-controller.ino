@@ -1,4 +1,4 @@
-#define REVISION "20210801"
+#define REVISION "20210915"
 
 #include <MIDI.h>
 
@@ -102,9 +102,9 @@ boolean tryReadSerialPort() {
         Serial.readBytes(bytes, 8);
         
         if (bytes[0] == 0) {
-            int page = bytes[1];
-            config.setPage(page);
-            printer.usbPageChanged(page);
+            byte page = bytes[1];
+            config.setPage(page + 1);
+            printer.usbPageChanged(page + 1);
         } else if (bytes[0] == 1) {
             ControllerButtonEntity button = { bytes[3], bytes[4], bytes[5], bytes[6], bytes[7] };
 
@@ -124,7 +124,11 @@ boolean tryReadSerialPort() {
             int fsNo = bytes[1];
             config.setButton(fsNo, button, state);
             printer.commandInfo(fsNo, state, 0);
+        } else if (bytes[0] == 2) {
+            printer.debug("SENDING...");
+            config.sendConfiguration();
         }
+        
 
         return true;
     }

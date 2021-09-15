@@ -8,11 +8,12 @@
 
 #define BUTTON_NO 6
 #define PAGE_NO 3
-#define PAGE_SIZE 48
 #define BUTTON_SIZE 5
-#define LONG_CLICK_BUFFER_START BUTTON_NO * PAGE_NO * BUTTON_SIZE
 #define ACTIONS_NO 3
-#define BUFFER_SIZE BUTTON_NO * BUTTON_SIZE * ACTIONS_NO * PAGE_NO
+
+#define PAGE_SIZE BUTTON_NO * BUTTON_SIZE * ACTIONS_NO
+#define LONG_CLICK_BUFFER_START BUTTON_NO * PAGE_NO * BUTTON_SIZE
+#define BUFFER_SIZE PAGE_SIZE * PAGE_NO
 
 #define USB_MODE_EEPROM_ADDR 800
 
@@ -36,6 +37,7 @@ public:
 
   bool isInUsbMidiMode();
   void setUsbMidiMode(boolean enabled);
+  void sendConfiguration();
 };
 
 #endif

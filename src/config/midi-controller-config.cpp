@@ -76,3 +76,7 @@ boolean MidiControllerConfig::isInUsbMidiMode() {
 void MidiControllerConfig::setUsbMidiMode(boolean enabled) {
   EEPROM.write(USB_MODE_EEPROM_ADDR, enabled ? 1 : 0);
 }
+
+void MidiControllerConfig::sendConfiguration() {
+  Serial.write(this->storedData, BUFFER_SIZE);
+}
